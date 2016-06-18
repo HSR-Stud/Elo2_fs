@@ -1,0 +1,1729 @@
+%%This is a very basic article template.
+%%There is just one section and two subsections.
+\documentclass{article}
+
+\input{fs.tex}
+\usepackage[american]{circuitikz}
+\ctikzset{resistor = european} 
+\ctikzset{tripoles/mos style/arrows}
+\ctikzset{voltage = european}
+
+%Title of Document
+
+\chead{Elektronik 2 - Formelsammlung} 
+
+\begin{document}
+
+\input{components.tex}
+\hfuzz=10pt
+
+\begin{twocolumn}
+
+\section{Analoge Wandler}
+
+\subsection{Schrittweite, Auflösung}
+\begin{tabular}{ll}
+  \begin{tabular}{>{\begin{definition}}l<{\end{definition}} >{\begin{definition}}l<{\end{definition}}}
+    $D$ & Digitaler Wert \\
+    $B_{n-1}$ & Bitwert (0: LSB) \\
+    $q$ & Quantisierungsschritt \\
+    $K, G$ & Konstanten \\
+    $A$ & Analoges Signal \\
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $\fmm D = \sum_{k = 0}^{n-1} B_k \cdot 2^k = \frac{V_{in} - V_{ref_n}}{V_{ref_p} - V_{ref_n}} \cdot 2^n$ \\
+    $\fmm V_{out} = \frac{D}{2^n} (V_{ref_p} - V_{ref_n} + V_{ref_n})$ \\
+    $\fmm q = \frac{V_{ref_p} - V_{ref_n}}{2^n}$
+  \end{mtabular}
+\end{tabular}
+
+\subsection{Fehler}
+\subsubsection{Offset-Fehler}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.45\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 8,
+        ymin = 0,
+        ymax = 9.5,
+        xlabel = {$D_{in}$},
+        ylabel = {$A_{out}$},
+        xtick={1,3,5,7},
+        xticklabels={$001$, $011$, $101$, $111$},
+        extra x ticks={0,2,4,6},
+        extra x tick labels={$000$, $010$, $100$, $110$},
+        extra tick style={major tick length = 0.7cm, yshift=-0.2cm},
+      ]
+        
+        \addplot [draw=cBlue, mark=*, mark options={draw=cBlue, fill=cBlue}, dashed] coordinates {(0,0) (1,1) (2,2) (3,3) (4,4) (5,5) (6,6) (7,7) };
+        \addplot [draw=cRed , mark=*, mark options={draw=cRed , fill=cRed }, dashed] coordinates {(0,1.1) (1,2.1) (2,3.1) (3,4.1) (4,5.1) (5,6.1) (6,7.1) (7,8.1) };
+        
+        \draw [densely dotted] (axis cs:0,1.1) -- (axis cs:-0.5,1.1);
+        \draw [densely dotted] (axis cs:0,0) -- (axis cs:-0.5,0);
+        \draw [<->] (axis cs:-0.5,0) -- node[left]{$E_{off}$} (axis cs:-0.5,1.1);
+        
+      \end{axis}
+    \end{tikzpicture}
+    
+  \end{tabular}&
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 9.5,
+        ymin = 0,
+        ymax = 8,
+        xlabel = {$A_{in}$},
+        ylabel = {$D_{out}$},
+        xtick = {1,2,3,4,5,6,7,8},
+        xticklabels={$1$,$$,$3$,$4$,$5$,$6$,$7$,$8$},
+        ytick = {0,1,2,3,4,5,6,7},
+        yticklabels = {$000$,$001$,$010$,$011$,$100$,$101$,$110$,$111$}
+      ]
+        
+        \addplot [draw=cBlue, const plot, thick] coordinates {(0.5,0)(0.5,1)(1.5,2)(2.5,3)(3.5,4)(4.5,5)(5.5,6)(6.5,7)(9,7)};
+        \addplot [draw=cRed , const plot, thick] coordinates {(1.8,0)(1.8,1)(2.8,2)(3.8,3)(4.8,4)(5.8,5)(6.8,6)(7.8,7)(9,7)};
+        
+        \draw [densely dotted] (axis cs:0.5,0) -- (axis cs:0.5,-1.2);
+        \draw [densely dotted] (axis cs:1.8,0) -- (axis cs:1.8,-1.2);
+        \draw [<->] (axis cs:0.5,-1.2) -- node[below]{$E_{off}$} (axis cs:1.8,-1.2);
+                 
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+\subsubsection{Verstärikungs- oder Gain-Fehler}
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 8,
+        ymin = 0,
+        ymax = 7.5,
+        xlabel = {$D_{in}$},
+        ylabel = {$A_{out}$},
+        xtick={1,3,5,7},
+        xticklabels={$001$, $011$, $101$, $111$},
+        extra x ticks={0,2,4,6},
+        extra x tick labels={$000$, $010$, $100$, $110$},
+        extra tick style={major tick length = 0.7cm, yshift=-0.2cm},
+      ]
+       
+        \addplot [draw=cBlue, mark=*, mark options={draw=cBlue, fill=cBlue}, dashed] coordinates {(0,0) (1,1) (2,2) (3,3) (4,4) (5,5) (6,6) (7,7) }; 
+        \addplot [draw=cRed , mark=*, mark options={draw=cRed , fill=cRed }, dashed] coordinates {(0,0) (1,0.8) (2,1.6) (3,2.4) (4,3.2) (5,4) (6,4.8) (7,5.6) }; 
+        
+        \draw [densely dotted](axis cs:7,7) -- (axis cs:7.5,7);
+        \draw [densely dotted](axis cs:7,5.6) -- (axis cs:7.5,5.6);
+        \draw [<->] (axis cs:7.5,7) -- node[right]{$E_G$} (axis cs:7.5,5.6);
+        
+      \end{axis}
+    \end{tikzpicture}
+    
+  \end{tabular}&
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 9.5,
+        ymin = 0,
+        ymax = 8,
+        xlabel = {$A_{in}$},
+        ylabel = {$D_{out}$},
+        xtick = {1,2,3,4,5,6,7,8},
+        xticklabels={$1$,$$,$3$,$4$,$5$,$6$,$7$,$8$},
+        ytick = {0,1,2,3,4,5,6,7},
+        yticklabels = {$000$,$001$,$010$,$011$,$100$,$101$,$110$,$111$}
+      ]
+      
+        \addplot [draw=cBlue, const plot, thick] coordinates {(0.5,0)(0.5,1)(1.5,2)(2.5,3)(3.5,4)(4.5,5)(5.5,6)(6.5,7)(9,7)};
+        \addplot [draw=cRed , const plot, thick] coordinates {(0.4,0)(0.4,1)(1.2,2)(2,3)(2.8,4)(3.6,5)(4.4,6)(5.2,7)(9,7)};
+        
+        \addplot [draw=cBlue, dashed, mark=none] coordinates {(0,0)(7,7)};
+        \addplot [draw=cRed , dashed, mark=none] coordinates {(0,0)(5.6,7)};
+        
+        \draw [densely dotted](axis cs:7,7) -- (axis cs:7,7.5);
+        \draw [densely dotted](axis cs:5.6,7) -- (axis cs:5.6,7.5);
+        \draw [<->] (axis cs:5.6,7.5) -- node[above]{$E_G$} (axis cs:7,7.5);
+                         
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+\subsection{Integrale Nichtlinearität INL}
+Die Integrale Nichtlinearität bezeichnet die maximale Abweigung der Ausgangskurve von der idealen Gerade nach der Korrektur von Offset- und Gain-Fehler:
+
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 8,
+        ymin = 0,
+        ymax = 7.5,
+        xlabel = {$D_{in}$},
+        ylabel = {$A_{out}$},
+        xtick={1,3,5,7},
+        xticklabels={$001$, $011$, $101$, $111$},
+        extra x ticks={0,2,4,6},
+        extra x tick labels={$000$, $010$, $100$, $110$},
+        extra tick style={major tick length = 0.7cm, yshift=-0.2cm},
+      ]
+       
+        \addplot [draw=cBlue, mark=*, mark options={draw=cBlue, fill=cBlue}, dashed] coordinates {(0,0)(1,1)  (2,2)  (3,3)  (4,4)  (5,5)  (6,6)  (7,7)}; 
+        \addplot [draw=cRed,  mark=*, mark options={draw=cRed,  fill=cRed }, dashed] coordinates {(0,0)(1,1.2)(2,2.4)(3,3.8)(4,4.6)(5,5.4)(6,6.2)(7,7)};
+        
+        \draw [densely dotted] (axis cs:3,3) -- (axis cs:5,3);
+        \draw [densely dotted] (axis cs:3,3.8) -- (axis cs:5,3.8);
+        \draw [>-<] (axis cs:5,2.82) -- node[right]{$E_{INL}$} (axis cs:5,3.98);
+        
+      \end{axis}
+    \end{tikzpicture}
+    
+  \end{tabular}&
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 9.5,
+        ymin = 0,
+        ymax = 8,
+        xlabel = {$A_{in}$},
+        ylabel = {$D_{out}$},
+        xtick = {1,2,3,4,5,6,7,8},
+        xticklabels={$1$,$$,$3$,$4$,$5$,$6$,$7$,$8$},
+        ytick = {0,1,2,3,4,5,6,7},
+        yticklabels = {$000$,$001$,$010$,$011$,$100$,$101$,$110$,$111$}
+      ]
+      
+        \addplot [draw=cBlue, const plot, thick] coordinates {(0.5,0)(0.5,1)(1.5,2)(2.5,3)(3.5,4)(4.5,5)(5.5,6)(6.5,7)(9,7)};
+        \addplot [draw=cRed , const plot, thick] coordinates {(0.4,0)(0.4,1)(1.2,2)(2.1,3)(2.9,4)(4.1,5)(5.2,6)(6.3,7)(9,7)};
+        
+        \addplot [draw=cBlue, dashed, mark=none] coordinates {(0,0)(7,7)};
+        \addplot [draw=cRed , dashed, mark=none] coordinates {(0,0)(0.4,0.5)(1.2,1.5)(2.1,2.5)(2.9,3.5)(4.1,4.5)(5.2,5.5)(6.3,6.5)(7,7)};
+        
+        \draw [densely dotted] (axis cs:3.5,4) -- (axis cs:3.5,4.5);
+        \draw [densely dotted] (axis cs:2.9,4) -- (axis cs:2.9,4.5);
+        \draw [>-<] (axis cs:2.7,4.5) -- node[above]{$E_{INL}$} (axis cs:3.7,4.5);
+                         
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+\subsection{Differentielle Nichtlinearität DNL}
+Die Differentielle Nichtlinearität bezeichnet den maximalen Fehler, der beim Inkrement des Datenwortes um ein LSB auftritt.
+Die DNL ist die Differenz des Spannungsinkrements um ein LSB und dem idealen Spannungsinkrement $q$.
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 8,
+        ymin = 0,
+        ymax = 7.5,
+        xlabel = {$D_{in}$},
+        ylabel = {$A_{out}$},
+        xtick={1,3,5,7},
+        xticklabels={$001$, $011$, $101$, $111$},
+        extra x ticks={0,2,4,6},
+        extra x tick labels={$000$, $010$, $100$, $110$},
+        extra tick style={major tick length = 0.7cm, yshift=-0.2cm},
+      ]
+       
+        \addplot [draw=cBlue, mark=*, mark options={draw=cBlue, fill=cBlue}, dashed] coordinates {(0,0)(1,1)  (2,2)  (3,3)  (4,4)  (5,5)  (6,6)  (7,7)}; 
+        \addplot [draw=cRed,  mark=*, mark options={draw=cRed,  fill=cRed }, dashed] coordinates {(0,0)(1,1.1)(2,2.6)(3,3.8)(4,4.6)(5,5.4)(6,6.2)(7,7)};
+        
+        \draw [densely dotted] (axis cs:1,1.1) -- (axis cs:4,1.1);
+        \draw [densely dotted] (axis cs:2,2.6) -- (axis cs:3.5,2.6);
+        \draw [densely dotted] (axis cs:3.5,2.1) -- (axis cs:4,2.1);
+        \draw [<->] (axis cs:4,1.1) -- node[right]{$q$} (axis cs:4,2.1);
+        \draw [>-<] (axis cs:3.5,2.8) -- node[above right, yshift=-2mm]{\footnotesize $E_{DNL}$} (axis cs:3.5,1.9);  
+                     
+      \end{axis}
+    \end{tikzpicture}
+    
+  \end{tabular}&
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.5\columnwidth,
+        height=0.4\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 9.5,
+        ymin = 0,
+        ymax = 8,
+        xlabel = {$A_{in}$},
+        ylabel = {$D_{out}$},
+        xtick = {1,2,3,4,5,6,7,8},
+        xticklabels={$1$,$$,$3$,$4$,$5$,$6$,$7$,$8$},
+        ytick = {0,1,2,3,4,5,6,7},
+        yticklabels = {$000$,$001$,$010$,$011$,$100$,$101$,$110$,$111$}
+      ]
+      
+        \addplot [draw=cBlue, const plot, thick] coordinates {(0.5,0)(0.5,1)(1.5,2)(2.5,3)(3.5,4)(4.5,5)(5.5,6)(6.5,7)(9,7)};
+        \addplot [draw=cRed , const plot, thick] coordinates {(0.4,0)(0.4,1)(1.1,2)(2,3)(2.9,4)(4.1,5)(5.2,6)(6.3,7)(9,7)};
+        
+        \addplot [draw=cBlue, dashed, mark=none] coordinates {(0,0)(7,7)};
+        \addplot [draw=cRed , dashed, mark=none] coordinates {(0,0)(0.4,0.5)(1.1,1.5)(2,2.5)(2.9,3.5)(4.1,4.5)(5.2,5.5)(6.3,6.5)(7,7)};
+        
+        \draw [densely dotted] (axis cs:1.1,2) -- (axis cs:1.1,4);
+        \draw [densely dotted] (axis cs:0.4,0.5) -- (axis cs:0.4,4.5);
+        \draw [densely dotted] (axis cs:1.4,4.5) -- (axis cs:1.4,4);
+        \draw [<->] (axis cs:0.4,4.5) -- node[above]{$q$} (axis cs:1.4,4.5);
+        \draw [>-<] (axis cs:0.9,4) -- node[below right, xshift=-2mm] {\footnotesize $E_{DNL}$} (axis cs:1.6,4);
+                         
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+Für monotone Wandler muss $E_{DNL} > -1 LSB$ betragen. sonst wird es ein nicht-monotoner Wandler.
+
+\subsection{Quantisierung und Signal to Noise Ratio}
+das Quantisierungsrauschen kann als lineare Rauschquelle modelliert werden. Pro bit erhäht sich das SNR um 6dB
+
+$$P_Q = \frac{q^2}{12} \quad SNR \approx 1.76 + n \cdot 6 \text{dB}$$
+
+\section{Digital-Analog Wandler DAC}
+
+\subsection{Strom-DAC nach Parallelverfahren}
+
+\begin{center}
+\begin{circuitikz}[scale=0.6, transform shape]
+  \draw (0,3) node[left]{\Large $V_{Ref}$} to [short, o-] (11,3);
+  \draw (2,3) to [resistor, l_={\Large $R$}, *-] (2,1) to [switch] (2,-0.5) to [short, -o] (12,-0.5) node[right]{\Large $I_{Out}$};
+  \draw (3.5,3) to [resistor, l_={\Large $R$}, *-] (3.5,1) to [switch, -*] (3.5,-0.5);
+  \draw (5,3) to [resistor, l_={\Large $R$}, *-] (5,1) to [switch, -*] (5,-0.5);
+  \draw (6.5,3) to [resistor, l_={\Large $R$}, *-] (6.5,1) to [switch, -*] (6.5,-0.5);
+  \draw (8,3) to [resistor, l_={\Large $R$}, *-] (8,1) to [switch, -*] (8,-0.5);
+  \draw (9.5,3) to [resistor, l_={\Large $R$}, *-] (9.5,1) to [switch, -*] (9.5,-0.5);
+  \draw (11,3) to [resistor, l_={\Large $R$}, *-] (11,1) to [switch, -*] (11,-0.5);
+  
+  %decoder
+  \draw [thick] (1,-0.5) to (1,1) to (-1.5, 1) to (-1.5,-0.5) to (1,-0.5);
+  \draw (-0.25,0.25) node {\Large Decoder};
+  \draw (-1.5,-0.125) to [short] (-2.5,-0.125);
+  \draw (-1.5,0.25) to [short] (-2.5,0.25) node[left]{\Large $D$};
+  \draw (-1.5,0.625) to [short] (-2.5,0.625);
+  \draw [dotted] (1,0.25) to [short] (11,0.25);
+\end{circuitikz}
+\end{center}
+
+Dieser Wandler hat eine garantierte Stetigkeit. Er benötigt jedoch $2^n$ Wiederstände und $2^n$ Schalter, sowie einen $n$-to-$2^n$ Decoder. 
+Als Schalter eignen sich Mosfets sehr gut.
+
+$$I_{Out} = D \cdot I = D \cdot \frac{V_{Ref}}{R}$$
+
+\subsection{Voltage Scaling DAC}
+
+\begin{center}
+\begin{circuitikz}[scale=0.6, transform shape]
+  \draw (0,2) node[left] {\Large $V_A$} to [short, o-*] (1,2) to [resistor, l_={\Large $R$}, -*] (3,2) to [resistor, l_={\Large $R$}, -*] (5,2)
+    to [resistor, l_={\Large $R$}, -*] (7,2)  to [resistor, l_={\Large $R$}, -*] (9,2)  to [resistor, l_={\Large $R$}, -*] (11,2)
+    to [resistor, l_={\Large $R$}, -*] (13,2)  to [resistor, l_={\Large $R$}, -*] (15,2) to [short, -o] (16,2) node[right]{\Large $V_B$};
+  \draw (1,2) to [switch] (1,0) to (16,0) [short, -o] node[right]{\Large $V_{Out}$};
+  \draw (3,2) to [switch, -*] (3,0);
+  \draw (5,2) to [switch, -*] (5,0);
+  \draw (7,2) to [switch, -*] (7,0);
+  \draw (9,2) to [switch, -*] (9,0);
+  \draw (11,2) to [switch, -*] (11,0);
+  \draw (13,2) to [switch, -*] (13,0);
+  \draw (15,2) to [switch, -*] (15,0);
+  
+  %decoder
+  \draw [thick] (1,-0.5) to (1,-2) to (3.5, -2) to (3.5,-0.5) to (1,-0.5);
+  \draw (2.25,-1.25) node {\Large Decoder};
+  \draw (3.5,-1.625) to [short] (4.5,-1.625);
+  \draw (3.5,-1.25) to [short] (4.5,-1.25) node[right]{\Large $D$};
+  \draw (3.5,-0.825) to [short] (4.5,-0.825);
+  \draw [dotted] (1,-1.25) to [short] (0,-1.25) to [short] (0,1) to [short] (15,1);
+\end{circuitikz}
+\end{center}
+
+Bei diesem Wandler ist ein automatisierter Elektronik-Test möglich. der Wert $D$ muss im PROM gespeichert werden. 
+$V_A$ und $V_B$ können variabel sein. 
+
+\subsection{DAC nach Wägeverfahren}
+\begin{center}
+  \begin{circuitikz} [scale=0.6, transform shape]
+    \draw (3,3) node[spdt, anchor=in, rotate=90] (B0) {};
+    \draw (5,3) node[spdt, anchor=in, rotate=90] (B1) {};
+    \draw (7,3) node[spdt, anchor=in, rotate=90] (B2) {};
+    \draw (9,3) node[spdt, anchor=in, rotate=90] (B3) {};
+    
+    \draw (0,5) node[left]{\Large $V_{ref_p}$} to [short, o-] (8.69,5) to [short] (B3.out 1); 
+    \draw (2.69,5) to [short, *-] (B0.out 1);
+    \draw (4.69,5) to [short, *-] (B1.out 1);
+    \draw (6.69,5) to [short, *-] (B2.out 1);
+    
+    \draw (11, 4.5) node[right]{\Large $V_{ref_n}$} to [short, o-] (3.31, 4.5) to [short] (B0.out 2);
+    \draw (5.31,4.5) to [short, *-] (B1.out 2);
+    \draw (7.31,4.5) to [short, *-] (B2.out 2);
+    \draw (9.31,4.5) to [short, *-] (B3.out 2);
+    
+    \draw (1,5) to [short] (1,3) to [resistor, l_={\Large $8R$}] (1,1) to [short, -o] (11,1) node[right]{\Large $V_{Out}$};
+    \draw (B0.in) node[above right, xshift=2mm]{\Large $B_0$} to [resistor, l_={\Large $8R$}, -*] (3,1);
+    \draw (B1.in) node[above right, xshift=2mm]{\Large $B_1$} to [resistor, l_={\Large $4R$}, -*] (5,1);
+    \draw (B2.in) node[above right, xshift=2mm]{\Large $B_2$} to [resistor, l_={\Large $2R$}, -*] (7,1);
+    \draw (B3.in) node[above right, xshift=2mm]{\Large $B_3$} to [resistor, l_={\Large $R$ }, -*] (9,1);
+  \end{circuitikz}
+\end{center}
+
+Dieser Wandler benötigt nur $n$ Schalter und $n+1$ wiederstände. 
+Jedoch ist die Stetigkeit nicht garantiert.
+Ausserdem sind grosse Wertebereiche für die Wiederstände notwendig.
+Um den Ausgang $V_{Out}$ belasten zu können, muss ein Buffer dazugeschaltet werden.
+
+$$V_{Out} = \frac{B_0 \cdot \frac{1}{8R} + B_1 \cdot \frac{1}{4R} + B_2 \cdot \frac{1}{2R} + B_3 \cdot \frac{1}{R}}{\frac{2}{R}}\cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
+
+\subsection{Kapazitiver DAC (Charge Scaling)}
+
+\begin{center}
+  \begin{circuitikz} [scale=0.6, transform shape]
+    \draw (3,3) node[spdt, rotate=90] (B0) {};
+    \draw (5,3) node[spdt, rotate=90] (B1) {};
+    \draw (7,3) node[spdt, rotate=90] (B2) {};
+    \draw (9,3) node[spdt, rotate=90] (B3) {};
+   
+    \draw (12,0.5) node[op amp] (opamp) {};    
+    
+    \draw (-1,5) node[left]{\Large $V_{ref_p}$} to [switch, o-](1,5) node[above, xshift=-1cm, yshift=2mm]{\Large $S_2$} to [short] (8.69,5) to [short] (B3.out 1); 
+    \draw (2.69,5) to [short, *-] (B0.out 1);
+    \draw (4.69,5) to [short, *-] (B1.out 1);
+    \draw (6.69,5) to [short, *-] (B2.out 1);
+    
+    \draw (-1, 4.5) node[left]{\Large $V_{ref_n}$} to [switch, o-](1,4.5) node[below, xshift=-1cm]{\Large $S_0$} to [short] (9.31, 4.5) to [short] (B3.out 2);
+    \draw (3.31,4.5) to [short, *-] (B0.out 2);
+    \draw (5.31,4.5) to [short, *-] (B1.out 2);
+    \draw (7.31,4.5) to [short, *-] (B2.out 2);
+    
+    \draw (1,5) to [short] (1,3) to [capacitor, l_={\Large $C$}] (1,1) to [short] (opamp.-);
+    \draw (B0.in) node[above left, xshift=-2mm]{\Large $B_0$} to [capacitor, l_={\Large $C$}, -*] (3,1);
+    \draw (B1.in) node[above left, xshift=-2mm]{\Large $B_1$} to [capacitor, l_={\Large $2C$}, -*] (5,1);
+    \draw (B2.in) node[above left, xshift=-2mm]{\Large $B_2$} to [capacitor, l_={\Large $4C$}, -*] (7,1);
+    \draw (B3.in) node[above left, xshift=-2mm]{\Large $B_3$} to [capacitor, l_={\Large $8C$ }, -*] (9,1);
+  
+    \draw (opamp.+) to [short] (10,0) to [short] (10,4.5) to [short, -*] (9.31,4.5);
+    \draw (opamp.out) to [short] (13.2,2.5) to [capacitor, l={\Large $C_{fb}$}] (10.8,2.5) to [short] (opamp.-);
+    \draw (13.2,2.5) to [short, *-] (13.2,3.5) to [switch] (10.8,3.5) node[above, xshift=1.2cm]{\Large $S_1$} to [short, -*] (10.8,2.5);
+    \draw (opamp.out) to [short] (14,0.5) node[right] {\Large $V_{Out}$};
+  
+  \end{circuitikz}
+\end{center}
+
+Mit den zusätzlichen Schalter $S_0$ und $S_1$ werden die Anfangsbedingungen gesetzt. 
+Mit dem Schalter $S_2$ wird der Ausgang gültig. 
+
+$$C_1 = B_3 \cdot 8 C + B_2 \cdot 4C + B_1 \cdot 2C + B_0 \cdot C$$
+$$C_2 = \overline{B_3} \cdot 8 C + \overline{B_2} \cdot 4C + \overline{B_1} \cdot 2C + \overline{B_0} \cdot C + C$$
+$$V_{Out} = \frac{C_1}{C_1 + C_2} \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n} = \frac{C_1}{2^n \cdot C}  \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
+
+\subsection{DAC mit R-2R-Netzwerk}
+
+\begin{center}
+  \begin{circuitikz}[scale=0.6, transform shape]
+    \draw (1,2.5) node[spdt, rotate=270, yscale=-1] (B3) {};
+    \draw (3,2.5) node[spdt, rotate=270, yscale=-1] (B2) {};
+    \draw (5,2.5) node[spdt, rotate=270, yscale=-1] (B1) {};
+    \draw (7,2.5) node[spdt, rotate=270, yscale=-1] (B0) {};
+    
+    \draw (11, 1) node[op amp] (opamp) {};
+    
+    \draw (0,5) node[left]{\Large $V_{ref_p}$} to [short] (1,5) to [resistor, l={\Large $R$}] (3,5) to [resistor, l={\Large $R$}] (5,5) to [resistor, l={\Large $R$}] (7,5) to [short] (9,5);
+    \draw (1,5) to [resistor, l={\Large $2R$}, *-] (B3.in) node[right, yshift=-5mm] {\Large $B_3$};
+    \draw (3,5) to [resistor, l={\Large $2R$}, *-] (B2.in) node[right, yshift=-5mm] {\Large $B_2$};
+    \draw (5,5) to [resistor, l={\Large $2R$}, *-] (B1.in) node[right, yshift=-5mm] {\Large $B_1$};
+    \draw (7,5) to [resistor, l={\Large $2R$}, *-] (B0.in) node[right, yshift=-5mm] {\Large $B_0$};
+    
+    \draw (B3.out 1) to [short](0.69, 1.5) to (opamp.-);
+    \draw (B2.out 1) to [short, -*] (2.69,1.5);
+    \draw (B1.out 1) to [short, -*] (4.69,1.5);
+    \draw (B0.out 1) to [short, -*] (6.69,1.5);
+    
+    \draw (0, 0.5) node[left]{\Large $V_{ref_n}$} to [short] (opamp.+);
+    \draw (B3.out 2) to [short, -*] (1.31,0.5);
+    \draw (B2.out 2) to [short, -*] (3.31,0.5);
+    \draw (B1.out 2) to [short, -*] (5.31,0.5);
+    \draw (B0.out 2) to [short, -*] (7.31,0.5);
+    \draw (9,5) to [resistor, l={\Large $2R$}] (9,3) to [short, -*] (9,0.5);
+    
+    \draw (opamp.out) to [short] (12.2,3) to [resistor, l={\Large $R$}] (9.8,3) to [short] (opamp.-);
+    \draw (opamp.out) to [short] (13,1) node[right] {\Large $V_{Out}$};
+    
+  \end{circuitikz}
+\end{center}
+
+\subsection{Zahlverfahren (PWM)}
+
+\begin{center}
+  \begin{circuitikz}[scale=0.6, transform shape]
+    \draw (2,1) node[spdt, xscale=-1] (sw) {};
+    
+    \draw (0,1.31) node[left]{\Large $V_{ref_p}$} to [short, o-] (sw.out 1);
+    \draw (0,0.69) node[left]{\Large $V_{ref_n}$} to [short, o-] (sw.out 2);
+    \draw (sw.in) to [resistor, l={\Large $R$}] (5,1) to [capacitor, l = {\Large $C$}, -o] (5,-1) node[below] {\Large $V_{A_{GND}}$};
+    \draw (5,1) to [short, *-o] (6,1) node[right] {\Large $V_{Out}$};
+    
+    %mod N counter
+    \draw [thick] (-6,2) to (-2,2) to (-2,0.5) to (-6,0.5) to (-6,2);
+    \draw (-4,1.25) node {\Large mod $N$ Counter};
+    \draw (-7,1.25) node[left]{\Large $N$} to [short] (-6,1.25);
+    
+    %<n?
+    \draw [thick] (-6,-2) to (-2,-2) to (-2,-0.5) to (-6,-0.5) to (-6,-2);
+    \draw (-4,-1.25) node {\Large $<$ $n$ ?};
+    \draw (-7,-1.25) node[left]{\Large $n$} to [short] (-6,-1.25);
+    \draw (-4,0.5) to (-4,-0.5);
+    \draw [dotted] (-2,-1.25) to (2,-1.25) to (2,1);
+  \end{circuitikz}
+\end{center}
+
+Der Schalter schaltet immer zwischen $V_{ref_p}$ und $V_{ref_n}$ um. 
+der nachfolgende Tiefpass $RC$ glättet das ganze Signal. 
+Diese Schaltung ist sehr einfach und ermöglicht eine hohe Auflösung.
+Jedoch ist sie sehr langsam und benötigt eine grosse Zeitkonstante.
+Es gilt folgende Beziehung: $\fmm V_{out} = V_{ref} \cdot \frac{n}{N}$
+
+\section{Analog-Digital Wandler ADC}
+
+\subsection{ADC nach Parallel-Verfahren}
+
+\begin{tabular}{ll}
+
+  \begin{tabular}{l}
+    \begin{circuitikz}[scale=0.5, transform shape]
+      \draw(0,18.25)
+        node[left] {\Large $V_{in}$}
+        to[short,o-](3,18.25)
+        to[short](3,1.5);
+    
+      \draw(0, 17.5)
+        node[left]{\Large $V_{ref}$}
+        to [resistor, l_={\Large $\frac{3}{2}R$}, o-*](2, 17.5)
+        to [resistor, l_={\Large $R$}, -*](2, 15)
+        to [resistor, l_={\Large $R$}, -*](2, 12.5)
+        to [resistor, l_={\Large $R$}, -*](2, 10)
+        to [resistor, l_={\Large $R$}, -*](2, 7.5)
+        to [resistor, l_={\Large $R$}, -*](2, 5)
+        to [resistor, l_={\Large $R$}, -*](2, 2.5)
+        to [resistor, l_={\Large $\frac{R}{2}$}](2, 0)
+        node[ground]{};
+    
+      \draw(5, 17) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,17.5)
+        (opamp.+) to [short,-*] (3,16.5)
+        (opamp.out) to [short] (7, 17);
+    
+      \draw(5, 14.5) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,15)
+        (opamp.+) to [short,-*] (3,14)
+        (opamp.out) to [short] (7, 14.5);
+    
+      \draw(5, 12) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,12.5)
+        (opamp.+) to [short,-*] (3,11.5)
+        (opamp.out) to [short] (7, 12);
+    
+      \draw(5, 9.5) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,10)
+        (opamp.+) to [short,-*] (3,9)
+        (opamp.out) to [short] (7, 9.5);
+    
+      \draw(5, 7) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,7.5)
+        (opamp.+) to [short,-*] (3,6.5)
+        (opamp.out) to [short] (7, 7);
+    
+      \draw(5, 4.5) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,5)
+        (opamp.+) to [short,-*] (3,4)
+        (opamp.out) to [short] (7, 4.5);
+    
+      \draw(5, 2) %comparator
+        node[op amp](opamp){}
+        (opamp.-) to [short] (2,2.5)
+        (opamp.+) to [short,-*] (3,1.5)
+        (opamp.out) to [short] (7, 2);
+    
+      %component
+      \draw [thick] (7, 18)
+        to [short](10,18)
+        to [short](10,0.5)
+        to [short](7,0.5)
+        to [short](7,18)
+        (8.5, 8.7) node[label={\large Latch Encoder}]{};
+    
+      %clock
+      \draw(5, -0.5)
+        node[label={$CLK$}] {}
+        to [short,o-](8.5, -0.5)
+        to [short](8.5, 0.5);
+    
+      %Out
+      \draw[thick](10, 9)
+        to [short, -o](11, 9)
+        node[label={\Large $Out$}]{};
+    
+      %Out Vector Declaration
+      \draw(10.3, 9.3)
+        node[label={\Large $3$}]{}
+        to[short](10.7, 8.7);
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{p{0.3\columnwidth}}
+    Dieses Verfahren ist sehr schnell. es braucht jedoch $2^n$ Wiederstände und $2^n-1$ Komparatoren.
+  \end{tabular}
+\end{tabular}
+
+\subsection{SAR: Successive Approximation Register}
+
+\begin{center}
+  \begin{circuitikz} [scale=0.6, transform shape]
+    %comp
+    \draw (5,2.5) node[op amp] (comp) {};
+    
+    %Search & Hold
+    \draw (0,3) node[left] {\Large  $V_{in}$} to [short, o-] (1,3);
+    \draw [thick] (1,3.75) to (3,3.75) to (3,2.25) to (1,2.25) to (1,3.75);
+    \draw (2,3) node {\Large S\&H};
+    \draw (3,3) to (comp.-);
+    
+    %n-bit SAR
+    \draw (comp.out) to (7,2.5);
+    \draw [thick] (7,3.25) to (10,3.25) to (10,1.75) to (7,1.75) to (7,3.25);
+    \draw (8.5,2.5) node {\Large $N$-Bit SAR};
+    \draw (6,4) node[left] {\Large $CLK$} to (8.5,4) to (8.5,3.25);
+    
+    %Register
+    \draw (10,2.5) to (12,2.5);
+    \draw (10.3,2.8) to (10.7,2.2) node[below left, yshift=1mm] {\Large $N$};
+    \draw [thick] (12,3.25) to (15,3.25) to (15,1.75) to (12,1.75) to (12,3.25);
+    \draw (13.5,2.5) node{\Large Register};
+    \draw (15,2.5) to [short, -o] (16,2.5) node[right] {\Large $OUT$};
+    
+    %N-Bit DAC
+    \draw (11,2.5) to [short, *-] (11,0.5) to (9, 0.5);
+    \draw [thick] (9,1.25) to (6,1.25) to (6,-0.25) to (9,-0.25) to (9,1.25);
+    \draw (7.5,0.5) node {\Large $N$-Bit DAC};
+    \draw (6,0.5) to (3.5,0.5) to (3.5,2) to (comp.+);
+    
+  \end{circuitikz} 
+\end{center}
+
+Der Sample and Hold-Teil speichert das Eingangssignal während der Wandlung. 
+der DAC-Ausgang nähert sich schrittweise approximativ dem Eingangssignal an.
+Der Wandler startet in der Mitte des möglichen Bereichs und arbeitet sich dann immer weiter vor. 
+Mit jedem Schritt wird die genauigkeit vergörssert. 
+Als DAC sollte vorzugsweise ein kapazitiver DAC verwendet werden.
+
+\begin{itemize}
+  \item im \textbf{Sample Mode} werden alle Kondensatoren (vom DAC und SAR) mit $V_{in}$ geladen. 
+  \item im \textbf{Hold Mode} wird der Eingang abgekoppelt. Danach bleibt die gesamte Ladung bestanden.
+  \item im \textbf{Redistribution Mode} wird im DAC ein Schalter umgeschaltet. (im ersten Zyklus die MSB-Kap, $8C$). 
+        Falls der Komparator-Ausgang $<0$ ist, so bleibt dieser Schalter und der nächste wird umgeschaltet.
+        Falls $>0$ ist, wird der Schalter zurück-, und der nächste umgeschaltet.
+\end{itemize}
+
+\subsection{Dual Slope Wandler} 
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz}[scale=0.6, transform shape]
+    
+      \draw (5,0.5) node [op amp, yscale=1.02] (int) {};
+      \draw (8,0)   node [op amp, yscale=1.02] (buf) {};
+    
+      \draw (0,2) node[left] {\Large $V_{ref}$} to [switch, o-] (2,2) node[above, yshift=2mm, xshift=-1cm]{\Large $S_2$} to [short, -*] (2,1);
+      \draw (0,1) node[left] {\Large $V_{in}$}  to [switch, o-] (2,1) node[above, yshift=2mm, xshift=-1cm]{\Large $S_1$} to [resistor, l={\Large $R_i$}] (4,1) to [short] (int.-);
+      \draw (int.+) to [short] (3.5,0) to [short] (3.5,-1) to [short, -o] (2.5,-1) node[left] {\Large $V_{A_{GND}}$};
+      \draw (int.out) to [short] (buf.-);
+      \draw (buf.+) to [short] (6,-0.5) to [short] (6,-1) to [short, -*] (3.5,-1); 
+      \draw (6.5,0.5) node[below]{\Large $V_{int}$} to [short] (6.5,2) to [capacitor, l_={\Large $C_i$}] (3.8,2) to (3.8,1); 
+      \draw (3.8,2) to [short, *-] (3.8,3.5) to [switch] (6.5,3.5) node[above, yshift=2mm, xshift=-1.3cm] {\Large $S_0$} to [short, -*] (6.5,2);
+      \draw (buf.out) to [short, -o] ++(1,0) node[above]{\Large $CompOut$};
+      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+        clip = false,
+        width=0.4\columnwidth,
+        height=0.3\columnwidth,
+        axis lines=middle,
+        xmin = 0, 
+        xmax = 1,
+        ymin = 0,
+        ymax = 1,
+        xlabel = {$t$},
+        ylabel = {$V_{int}$},
+        xtick = {0},
+        ytick = {0}
+      ]
+        
+        \draw [cRed, thick] (axis cs:0,0) -- (axis cs:0.5,0.7) -- (axis cs:0.8,0);
+        \draw [clRed, thick] (axis cs:0,0) -- (axis cs:0.5,0.5) -- (axis cs:0.7143,0);
+        \draw [clRed, thick] (axis cs:0,0) -- (axis cs:0.5,0.3) -- (axis cs:0.6286,0);
+        \draw [dashed] (axis cs:0.5,0.7) -- (axis cs:0.5,0);
+        \draw [>=latex, <->] (axis cs:0,-0.1) -- node[below]{$t_{int}$} (axis cs:0.5,-0.1);
+        \draw [>=latex, <->] (axis cs:0.5,-0.1) -- node[below]{$t_{abint}$} (axis cs:0.8,-0.1);
+      
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+$$V_{int_{max}} = \int_0^{t_{int}} - \frac{V_{in}}{R_i \cdot C_i} \cdot dt = - \frac{V_{in}}{R_i \cdot C_i} \cdot t_{int}$$
+%$$\text{Abintegration: } \quad V_{int}(t) = V_{int_{max}} - \frac{V_{ref}}{R_i \cdot C_i} \cdot t$$
+$$t_{abint} = - \frac{V_{in} \cdot t_{int}}{V_{ref}} \Rightarrow V_{in} = - V_{ref} \cdot \frac{t_{abint}}{t_{int}}$$
+
+Der Dual-Slope Wandler hat ein Tiefpass-verhalten. Ausserdem werden Frequenzen von 
+$\fmm \frac{k}{t_{int} + t_{abint}}, k \in \mathbb{N}$ perfekt unterdrückt. Um den Netzbrumm (50Hz) zu Unterdrücken,
+sollte die Integrationszeit 20ms betragen. 
+
+\subsection{Sigma-Delta Wandler}
+
+\begin{center}
+  \begin{circuitikz}[scale=0.6, transform shape]
+  
+    \draw (5,0.5) node [op amp, yscale=1.02] (int) {};
+    \draw (8,0)   node [op amp, yscale=1.02] (buf) {};
+  
+    \draw (0,3) node[left] {\Large $V_{ref}$} to [switch, o-] (2,3) node[above, yshift=2mm, xshift=-1cm]{\Large $S_3$} to [short, -*] (2,2);
+    \draw (0,2) node[left] {\Large $V_{ref}$} to [switch, o-] (2,2) node[above, yshift=2mm, xshift=-1cm]{\Large $S_2$} to [resistor, l^={\Large $R_{i2}$}, -*] (3.8,2);
+    \draw (0,1) node[left] {\Large $V_{in}$}  to [switch, o-] (2,1) node[above, yshift=2mm, xshift=-1cm]{\Large $S_1$} to [resistor, l_={\Large $R_{i1}$}] (3.8,1) to [short] (int.-);
+    \draw (int.+) to [short] (3.5,0) to [short] (3.5,-1) to [short, -o] (2.5,-1) node[left] {\Large $V_{A_{GND}}$};
+    \draw (int.out) to [short] (buf.-);
+    \draw (buf.+) to [short] (6,-0.5) to [short] (6,-1) to [short, -*] (3.5,-1); 
+    \draw (6.5,0.5) node[below]{\Large $V_{int}$} to [short] (6.5,2) to [capacitor, l_={\Large $C_i$}] (3.8,2) to (3.8,1); 
+    \draw (buf.out) to [short] (11,0) node[above left]{\Large $CompOut$};
+    
+    %digital control
+    \draw [thick] (11,-0.75) -- (11,0.75) -- (14,0.75) -- (14,-0.75) -- (11,-0.75);
+    \draw (12.5,0) node {\Large Digital Ctrl};
+    \draw (14,0) to [short, -o] (15,0) node[right]{\Large $D$};
+    
+  \end{circuitikz}
+\end{center}
+
+Sigma-Delta Wandler integireren wie Dual-Slope Wandler. Jedoch wird gleichzeitig auf- und abintegriert.
+Statt Zähler kann ein digitales Filter (als Mittelwertbildung) verwendet werden.
+
+\section{Filter}
+
+\begin{tabular}{llll}
+  \cdef{$f_{3dB}$} & \cdef{3dB-Grenze} \\
+  \cdef{$Q$} & \cdef{Güte} \\
+\end{tabular}
+
+\subsection{Tiefpass-Filter 1. Ordnung}
+\begin{center}
+  \begin{tabular}{ll}
+    \begin{tabular}{l}
+      \begin{circuitikz} [scale=0.6, transform shape]
+        \draw (0,2) node[left] {\Large $V_{in}$} to [resistor, l={\Large $R$}, o-*] (2,2) to [short, -o] (3,2) node[right] {\Large $V_{Out}$};
+        \draw (2,2) to [capacitor, l={\Large $C$}] (2,0) node[ground]{}; 
+      \end{circuitikz}
+    \end{tabular} &
+    \begin{tabular}{l}
+      $\fmm G(s) = \frac{1}{1 + s \cdot RC}$ \\
+      $\fmm T = R \cdot C$ \\
+      $\fmm f_{3dB} = \frac{1}{2\pi \cdot RC}$ \\
+    \end{tabular}
+  \end{tabular}
+\end{center}
+
+\subsection{Filter 2. Ordnung}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (0,2) node[left] {\Large $V_{in}$} to [resistor, l={\Large $R_1$}, o-*] (2,2) to [resistor, l={\Large $R_2$}, -*] (4,2) to [short, -o] (5,2) node[right] {\Large $V_{Out}$};
+      \draw (2,2) to [capacitor, l={\Large $C1$}] (2,0) node[ground]{}; 
+      \draw (4,2) to [capacitor, l={\Large $C2$}] (4,0) node[ground]{}; 
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $ G(s) = \frac{1}{1 + s \cdot (C_1 R_1 + C_2 R_1 + C_2 R_2) + s^2 \cdot C_1 C_2 R_1 R_2}$ \\
+    $\fmm Q = \frac{\sqrt{C_1 C_2 R_1 R_2}}{C_1 R_1 + C_2 R_1 + C_2 R_2}$ \\
+  \end{mtabular}
+\end{tabular}
+
+\subsection{Sallen Key (Einfachmitkopplung)}
+
+\begin{center}
+  \begin{circuitikz}[scale=0.6, transform shape]
+    \draw (6.5,3.5) node [op amp, yscale=-1.02](opamp){};
+    
+    \draw (0,4) node[left] {\Large $V_{in}$} to [resistor, l={\Large $R_1$}, o-*] (2,4) to [resistor, l={\Large $R_2$}, -*] (4,4) to (opamp.+);
+    \draw (4,4) to [capacitor, l_={\Large $C_2$}] (4,2) node[ground] {};
+    \draw (opamp.out) to [short, -*] (8,3.5) to [short, -o] (9,3.5) node[right] {\Large $V_{Out}$};
+    \draw (2,4) to [short] (2,5.5) to [capacitor, l={\Large $C_1$}] (8,5.5) to [short] (8,3.5) to [resistor, l_={\Large $R_A$}, -*] (8,1.5) to [resistor, l={\Large $R_B$}] (10,1.5) node[ground]{};
+    \draw (opamp.-) to [short] (5.3,1.5) to [short] (8,1.5);
+  \end{circuitikz}
+\end{center}
+
+$$G(s) = \frac{\frac{R_A + R_B}{R_B}}{s^2 \cdot C_1 C_2 R_1 R_2 + s \cdot \left( C_2 \cdot (R_1 + R_2) + C_1 R_1 \cdot \left( 1-\frac{R_A + R_B}{R_B} \right) \right) + 1}$$
+$$Q = \frac{\sqrt{C_1 C_2 R_1 R_2}}{C_2 \cdot (R_1 + R_2) + C_1 R_1 \cdot \left(1 - \frac{R_A + R_B}{R_B} \right)}$$
+
+Diese Filter sind nicht geeignet für Systeme mit hohen Frequenzanteilen, da diese ebenfalls (leicht) durchgelassen werden. 
+Es sind aber sehr grosse Polgüten möglich. 
+
+\subsection{Multiple-Feedback Struktur}
+\begin{center}
+  \begin{circuitikz}[scale=0.6, transform shape]
+    \draw (6,1.5) node [op amp, yscale=1.02] (opamp){};
+    
+    \draw (0,2) node[left] {\Large $V_{in}$} to [resistor, l_={\Large $R_1$}, o-*] (2,2) to [resistor, l={\Large $R_3$}, -*] (4,2) to [short] (opamp.-);
+    \draw (2,2) to [capacitor, l={\Large $C_1$}] (2,0) node[ground]{};
+    \draw (4,2) to [capacitor, l_={\Large $C_2$}, -*] (4,4);
+    \draw (2,2) to [resistor,  l={\Large $R_2$}] (2,4) to [short] (7.5,4) to [short, -*] (7.5,1.5);
+    \draw (opamp.out) to [short, -o] (8.5,1.5) node[right]{\Large $V_{Out}$};
+    \draw (opamp.+) to [short] (4.5,1) to [short] (4.5,0) node[ground]{};
+  \end{circuitikz}
+\end{center}
+
+$$G(s) = \frac{-\frac{R_2}{R_1}}{1 + s \cdot C_2 \cdot \left(R_2 + R_3 + \frac{R_2 R_3}{R_1}\right) + s^2 \cdot C_1 C_2 R_2 R_3}$$
+$$Q = \frac{\sqrt{C_1 C_2 R_2 R_3}}{C_2 \cdot \left( R_2 + R_3 + \frac{R_2 R_3}{R_1} \right)}$$
+
+\subsection{Maison-Regel}
+
+$$ G(s) = \frac{\fmm \sum_k P_k \cdot \Delta_k}{\Delta}$$
+
+\begin{tabular}{ll}
+  $\Delta = $& $\fmm 1 - \sum \text{Schleife}$ \\
+  & $\fmm + \sum \text{Produkt zweier nicht berührenden Schleifen}$ \\
+  & $\fmm - \sum \text{Produkt dreier nicht berührenden Schleifen}$ \\  
+  & $\fmm \pm \cdots$ \\
+  $\Delta_k = $ & $\fmm 1-\sum \text{Schleife, die } P_k \text{ nicht berührt}$ \\
+  & $\fmm +\sum \text{Prod. zweier sich und } P_k \text{ nicht berührenden Schleifen }$ \\
+  & $\fmm -\sum \text{Prod. dreier sich und } P_k \text{ nicht berührenden Schleifen }$ \\
+  & $\fmm \pm \cdots$ \\
+\end{tabular}
+
+\subsection{Ative Filter höherer Ordnung}
+
+
+
+\begin{center}
+  \begin{circuitikz} [scale=0.6, transform shape]
+  
+    %help lines
+    %\draw [help lines, step=0.2,] (0,0) grid (16,5);
+    %\draw [help lines, step=1, thick] (0,0) grid (16,5);
+  
+    \draw (3.5 ,0.5) node[op amp, yscale=1.02] (op1){};
+    \draw (8.5 ,0.5) node[op amp, yscale=1.02] (op2){};
+    \draw (13.5 ,0.5) node[op amp, yscale=1.02] (op3){}; 
+    
+    %opamp 1
+    \draw (0,1) node[left] {\Large $V_{in}$}to [resistor, l={\Large $R_{in}$}, o-*] (2,1) to [short] (op1.-);
+    \draw (op1.+) to [short] ++(-0.5,0) node[ground]{};
+    \draw (op1.out) to [short] (5,0.5) to [short, -*] (5,1) to [short] (5,2.5) to [resistor, l={\Large $R_0$}] (2,2.5) to [short] (2,1);
+  
+    %opamp 2
+    \draw (5,1) node[yshift=-0.9cm] {\Large $V_{opo1}$} to [resistor, l={\Large $R_{i1}$}, -*] (7,1) to [short] (op2.-);
+    \draw (op2.+) to [short] ++(-0.5,0) node[ground]{};
+    \draw (op2.out) to [short] (10, 0.5) to [short, -*] (10,1) to [short] (10,2.5) to [capacitor, l={\Large $C_{i1}$}] (7,2.5) to [short] (7,1);
+    
+    %opamp3
+    \draw (10,1) node[yshift=-0.9cm] {\Large $V_{opo2}$} to [resistor, l={\Large $R_{i2}$}, -*] (12,1) to [short] (op3.-);
+    \draw (op3.+) to [short] ++(-0.5,0) node[ground]{};
+    \draw (op3.out) to [short] (15,0.5) to [short, *-] (15,1) to [short, -*] (15,2.5) to [capacitor, l={\Large $C_{i2}$}, -*] (12,2.5) to [short] (12,1);
+    \draw (12,2.5) to [short] (12,3.5) to [resistor, l={\Large $R_{f2}$}] (15,3.5) to [short] (15,0.5) to [short, -o] (16,0.5) node[right] {\Large $V_{Out}$};
+  
+    %feedback
+    \draw (2,2.5) to [short, *-] (2,5) to [resistor, l_={\Large $R_{fp}$}] (15,5) to [short, -*](15,2.5); 
+  \end{circuitikz}
+\end{center}
+
+\begin{center}
+  \begin{sfd}{0.8}
+    %place a node:
+    \node[terminal={left}{$V_{in} $}] (vin)  at (0,0) {};
+    \node[terminal={above}{$I_{opn1}$}] (i1) at (2,0) {};
+    \node[terminal={above}{$V_{opo1}$}] (v1) at (4,0) {};
+    \node[terminal={above}{$I_{opn2}$}] (i2) at (6,0) {};
+    \node[terminal={above}{$V_{opo2}$}] (v2) at (8,0) {};
+    \node[terminal={above}{$I_{opn3}$}] (i3) at (10,0) {};
+    \node[terminal={right}{$V_{Out}$}] (vout) at (12,0) {};
+    
+    %Draw connector
+    \draw[amark=$\fmm \frac{1}{R_{in}}$] (vin) to (i1);
+    \draw[amark=$\fmm -R_0$] (i1) to (v1);
+    \draw[amark=$\fmm \frac{1}{R_{i1}}$] (v1) to (i2);
+    \draw[amark=$\fmm \frac{-1}{s C_{i1}}$] (i2) to (v2);
+    \draw[amark=$\fmm \frac{1}{R_{i2}}$] (v2) to (i3);
+    \draw[amark=$\fmm \frac{-1}{s C_{i2}}$] (i3) to (vout);
+    \draw[amarkback=$\fmm \frac{1}{R_{f2}}$] (vout) to [bend right=50] (i3);
+    \draw[amarkback=$\fmm \frac{1}{R_{fp}}$, label revd] (vout) to [out=-100,in=-40] (i1);
+  \end{sfd}
+\end{center}
+
+\section{Rauschen}
+\begin{itemize}
+  \item \textbf{Thermisches (weisses) Rauschen} ist über alle Frequenzen gleichverteilt. 
+  \item \textbf{Flicker Noise} (rosa Rauschen). Es nimmt mit $\frac{1}{f}$ ab. 
+    $\fmm E_n = K_v \cdot \sqrt{\ln{\frac{f_{max}}{f_{min}}}}$
+  \item \textbf{Shot Noise} ist zufällig entstehender Peak. 
+    $\fmm E_{sh} = k T \sqrt{\frac{2 B}{q I_{dc}}}$
+  \item \textbf{Burst (popcorn) noise} sind diskrete hochfrequente Pulse (klingt wie Popcorn).
+  \item \textbf{Avalanche Noise}: Entsteht in Dioden wenn Elektronen mit hoher Energie auf ein 
+    Kristallgitter prallen (Lawineneffekt). 
+\end{itemize}
+
+\textbf{Bemerkungen zum Rauschen:} Es ist wichtig, die Rauschleistungen (und nicht die Spannungen) zu
+addieren. Kapazitäten und Induktivitäten rauschen nicht. Da sie jedoch die Bandbreite verändern,
+beeinflussen sie direkt die Rauschspannung.
+
+\begin{center}
+  \begin{tabular}{ll}
+    \begin{dtabular}
+      $v_n(t)$ & Rauschsignal \\
+      $\overline{v_n}$ & Mittelwert \\
+      $\overline{v_n^2}$ & Varianz \\
+      $v_{n,rms}$ & Effektivwert \\
+      $k$ & $ = 1.38 \cdot 10^{-23}$ Bolzmann-Konstante \\
+      $T$ & Temperatur \\
+      $T_t$ & Messdauer \\
+      $B$ & Bandbreite \\
+    \end{dtabular}
+    \begin{mtabular}{l}
+      $\fmm \overline{v_n} = \frac{1}{T_t} \int_{T_t} v_n(t) \cdot dt = 0$ \\
+      $\fmm \overline{v_n^2} = \frac{1}{T_t} \int_{T_t} v_n^2(t) \cdot dt \neq 0$ \\
+      $\fmm v_{n,rms} = \sqrt{\overline{v_n^2}}$  \\
+    \end{mtabular}
+  \end{tabular}
+\end{center}
+
+\subsection{Rauschleistungen}
+\begin{center}
+  \begin{mtabular}{ll}
+    Weisses Rauschen & $\fmm \overline{v^2} = \int_{f_L}^{f_H} K \cdot df = K \cdot (f_H - f_L)$ \\
+    $1/f$ Rauschen & $\fmm \overline{v^2} = \int_{f_L}^{f_H} \frac{K}{f} df = K \cdot \ln{\frac{f_H}{f_L}}$ \\
+  \end{mtabular}
+\end{center}
+
+\subsection{Mittelwert von Rauschen}
+\begin{center}
+  \begin{tabular}{ll}
+    \begin{tabular}{l}
+      \begin{circuitikz}[scale=0.8, transform shape]
+      
+        \draw (0,3.5) to [R, l={\large $R$}, o-] (0,1.5) to [sV, l={\large $\overline{v_n^2}$}, -o] (0,0);
+        \draw (2,3.5) to [short, o-*] (2,2.75) to [R, l_={\large $G$}, -*] (2,0.75) to [short, -o] (2,0)
+              (2,2.75) to [short] (3,2.75) to [sI, l={\large $\overline{i_n^2}$}] (3,0.75) to [short] (2,0.75);
+        \draw [<->] (3,1.4) to (3,2.1);
+      \end{circuitikz}
+    \end{tabular} &
+    \begin{mtabular}{l}
+      $\fmm \overline{v_n^2} = 4 k T B \cdot R$ \\
+      $\fmm \overline{i_n^2} = 4 k T B \cdot G$ \\
+      Serieschaltung: $\fmm \overline{v_{tot}^2} = \overline{v_1^2} + \overline{v_2^2}$
+    \end{mtabular}
+  \end{tabular}
+\end{center}
+
+\subsection{Rausch-Bandbreite} 
+
+\begin{center}
+  \begin{tabular}{ll}
+    \begin{tabular}{l}
+      \begin{circuitikz} [scale=0.8, transform shape]
+        \draw (3,2) to [short, o-] (2,2) to [R, l_={\large $R$}] (0,2) to [sV, l_=\large $\overline{v_{in}^2}$] (0,0) to [short, -o] (3,0);
+        \draw (2,2) to [C, l={\large $C$}, *-*] (2,0);
+        \draw [->, shorten >=2mm, shorten <=2mm, bend left=40](3,2) to node[right] {\large $\overline{v_{out}^2}$} (3,0);
+      \end{circuitikz}
+    \end{tabular} & 
+    \begin{mtabular}{l}
+      $\fmm v_{out} = v_{in} \cdot \sqrt{ \int_0^\infty \frac{1}{1 + (2 \pi f \cdot R C)^2} \cdot df }$ \\
+      $\fmm v_{out} = v_{in}\cdot \sqrt{\frac{1}{4 RC}}$ \\
+      $\fmm \overline{v_{out}^2} = \overline{v_{in}^2} \cdot \frac{1}{4 RC} = \frac{k T}{C}$
+    \end{mtabular}
+  \end{tabular}
+\end{center}
+
+\subsection{Opamp-Modell mit Rauschen}
+
+\begin{center}
+  \begin{circuitikz}[scale=0.6,transform shape]
+
+    %help lines
+    %\draw [help lines, step=0.2, clGray] (-4,-1) grid (10,8);
+    %\draw [help lines, step=1, thick, clGray] (-4,-1) grid (10,8);
+
+    %connectors
+    \node (op-) at (0,5) {};
+    \node (op+) at (0,2) {};
+    \node (opout) at (9,3.5) {};
+    
+    %big opamp
+    \draw [thick] (1,7.5) to (8,3.5) to (1,-0.5) to (1,7.5);
+    \draw (1,5) node[below left] {\large $-$};
+    \draw (1,2) node[above left] {\large $+$};
+    
+    %small opamp
+    \draw [thick] (3.5,5.286) to (7,3.5) to (3.5,1.714) to (3.5,5.286);
+    \draw (3.5,5) node[below right] {\large $-$};
+    \draw (3.5,2) node[above right] {\large $+$};
+        
+    \draw(op-) to [short] (3.5,5);
+    \draw(op+) to [short] (2,2) to [sV, l_={\large $\overline{v_n^2}$}] (3.5,2);
+    
+    \draw (2,2) to [sI, l_={\large $\overline{i_{np}^2}$}, *-*] (2,3.5) to [sI, l_={\large $\overline{i_{nn}^2}$}, -*] (2,5);
+    \draw [{Latex[scale=0.6]}-{Latex[scale=0.6]}] (2,2.4) to (2,3.1);
+    \draw [{Latex[scale=0.6]}-{Latex[scale=0.6]}] (2,4.6) to (2,3.9);
+    \draw (2,3.5) to [short] (1.25,3.5) node[ground, scale=0.6] {};
+    \draw (7,3.5) to [short] (opout);
+    
+    \draw (op-) to [R, l={\Large $R_1$}] ++(-2,0) to [sV, l={\Large $\overline{v_1^2}$}] ++(-1.5,0) node[ground] {}; 
+    \draw (op+) to [R, l={\Large $R_3$}] ++(-2,0) to [sV, l={\Large $\overline{v_3^2}$}] ++(-1.5,0) node[ground] {}; 
+    \draw (op-) to [short, *-] (0,8) to [short] (3,8) to [sV, l={\Large $\overline{v_2^2}$}] (4.5,8) 
+          to [R, l={\Large $\overline{R_2}$}] (6.5,8) to [short] (9,8) to [short, -*] (9,3.5) 
+          to [short, -o] (10,3.5) node[right] {\Large $\overline{v_{tot}^2}$};
+    
+  \end{circuitikz}
+\end{center}
+
+Das Ausgangsrauschen $\overline{v_{out}^2}$ berechnet sich durch Superposition. 
+Es werden immer alle ausser eine Rauschquelle ausgeschaltet und ihren Einfluss berechnet.
+Danach werden alle Einflüsse zusammenaddiert. 
+
+$$\overline{v_{tot}^2} = \int \left( 
+    4kTR_2 A 
+  + 4kTR_3 A^2
+  + \overline{i_{nn}^2} R_2^2
+  + \overline{I_{np}^2} R_3^2 A^2
+  + \overline{v_n^2} A^2
+\right) df$$
+
+$$\text{mit} \quad A = \left(\frac{R_1 + R_2}{R_1}\right)$$
+
+Bei CMOS-Opamps ist das stromrauschen meist zu vernachlässigen. Ausserdem kann der Wiederstand $R_3=0$
+vernachlässigt werden. Ausserdem glit: \cdef{$e_w [Hz]$: Noise / Root (aus dem Datenblatt), $f_{enc} [Hz]$: 
+Noise Corner Frequency (aus dem Datenblatt), $B_{en}$: Effective Noise Bandwidth}
+
+$$\overline{v_{tot}^2} = B_{en} \cdot 4kTR_2 A + e_w^2 A^2 \left[ f_{enc} \ln{\left( \frac{f_H}{f_L} \right)} + B_{en} \right]$$
+
+Wenn ausserdem die Bandbreite $B \gg f_{enc}$ (mindestens 10 mal grösser) ist, können weitere
+Vernachlässigungen gemacht werden.
+
+$$\overline{v_{tot}^2} = 4kT \cdot R_2 \cdot A \cdot B_{en} + e_w^2 \cdot A^2 \cdot B_{en} $$
+
+\section{Spannungsreferenzen}
+
+Die \cdef{Sensitivität $S$} ist die relative Ànderung der des Ausgangs zur Eingangsveränderung.
+$\fmm S = \frac{\Delta V_{Ref} / V_{ref}}{\Delta V_{DD} / V_{DD}}$
+
+\subsection{Einfachste Referenzquelle}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.8, transform shape]
+      \draw (-0.5,4) node[left] {\large $V_{DD}$} to [short, o-] (0,4) to [R, l={\large $R_1$}]  (0,2) to [R, l={\large $R_2$}]  (0,0) node[ground] {};
+      \draw (0,2) to [short, *-o] (1,2) node[right] {\large $V_{Ref}$};
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+          clip = false,
+          width=0.7\columnwidth,
+          height=0.45\columnwidth,
+          axis lines=middle,
+          xmin = 0, 
+          xmax = 1.2,
+          ymin = 0,
+          ymax = 1.2,
+          xlabel = {$V$},
+          ylabel = {$I$},
+          xtick = {0.5,0.9,1,1.1},
+          xticklabels={$V_{Ref}$, $V_{DD_{min}} \qquad \quad$, $V_{DD}$, $\qquad \quad V_{DD_{max}}$},
+          ytick = {0},
+          %yticklabels = {}
+        ]
+        
+          \draw [thick] (axis cs:0,1) -- (axis cs:1,0); 
+          \draw (axis cs:0,0.9) -- (axis cs:0.9,0);
+          \draw (axis cs:0,1.1) -- (axis cs:1.1,0);
+          
+          \draw [thick] (axis cs:0,0) -- (axis cs:1.1,1.1);
+          \draw [dashed, -*] (axis cs:0.5,0) -- (axis cs:0.5,0.525);
+          
+          \draw [dashed] (axis cs:0.9,0) -- (axis cs:0.9,0.4);
+          \draw [dashed] (axis cs:1.1,0) -- (axis cs:1.1,0.4);
+          \draw [<->] (axis cs:0.9,0.4) -- node[above] {$\Delta V_{DD}$} (axis cs:1.1,0.4);
+          
+          \draw [dashed] (axis cs:0.45,0.45) -- (axis cs:0.45,0.8);
+          \draw [dashed] (axis cs:0.55,0.55) -- (axis cs:0.55,0.8);
+          \draw [<->] (axis cs:0.45,0.8) -- node[above] {$\Delta V_{Ref}$} (axis cs:0.55,0.8);
+      
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+$$S = \frac{\Delta V_{Ref} / V_{ref}}{\Delta V_{DD} / V_{DD}} = 1$$
+
+\subsection{Dioden Referenz}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+    
+      %help lines
+      %\draw [help lines, step=0.1, clGray] (0,0) grid (4,4);
+      %\draw [help lines, step=0.5, thick, clGray] (0,0) grid (4,4);
+    
+      \draw (-0.5,4) node[left] {\Large $V_{DD}$} to [short, o-] (0,4) to [R, l={\Large $R_1$}] (0,2) to [D, l={\Large $D_2$}]  (0,0) node[ground] {};
+      \draw (0,2) to [short, *-o] (0.5,2) node[right] {\Large $V_{Ref}$};
+      
+      \draw (3,1) node[pnp] (pnp) {};
+      \draw (3,1) node[right] {\Large $Q_2$};
+      \draw (2.5,4)  node[left] {\Large $V_{DD}$} to [short, o-] (3,4) to [R, l={\Large $R_1$}] (3,2) to [short] (pnp.emitter);
+      \draw (pnp.collector) to (3,0) node[ground] {};
+      \draw (pnp.base) to (2.15,0.24) to (pnp.collector);
+      \draw (3,2) to [short, *-o] (3.5,2) node[right] {\Large $V_{Ref}$};
+      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{l}
+    \begin{tikzpicture}
+      \begin{axis} [
+          clip = false,
+          width=0.65\columnwidth,
+          height=0.45\columnwidth,
+          axis lines=middle,
+          xmin = 0, 
+          xmax = 1.2,
+          ymin = 0,
+          ymax = 1.2,
+          xlabel = {$V$},
+          ylabel = {$I$},
+          xtick = {0.616,1},
+          xticklabels={$V_{Ref} \quad$, $V_{DD}$},
+          ytick = {0},
+          %yticklabels = {}
+        ]
+        
+          \draw [thick] (axis cs:0,1) -- (axis cs:1,0); 
+          \draw (axis cs:0,0.9) -- (axis cs:0.9,0);
+          \draw (axis cs:0,1.1) -- (axis cs:1.1,0);
+          
+          \addplot [thick, domain=0:0.8, samples=100] coordinates 
+          {
+            (0.00000,0.00000)(0.01000,0.00000)(0.02000,0.00000)(0.03000,0.00000)(0.04000,0.00000)(0.05000,0.00000)(0.06000,0.00000)(0.07000,0.00000)(0.08000,0.00000)(0.09000,0.00000)(0.10000,0.00000)(0.11000,0.00000)(0.12000,0.00000)(0.13000,0.00000)(0.14000,0.00000)(0.15000,0.00000)(0.16000,0.00000)(0.17000,0.00000)(0.18000,0.00000)(0.19000,0.00000)(0.20000,0.00000)(0.21000,0.00000)(0.22000,0.00000)(0.23000,0.00000)(0.24000,0.00000)(0.25000,0.00001)(0.26000,0.00001)(0.27000,0.00001)(0.28000,0.00002)(0.29000,0.00002)(0.30000,0.00003)(0.31000,0.00004)(0.32000,0.00005)(0.33000,0.00007)(0.34000,0.00009)(0.35000,0.00013)(0.36000,0.00017)(0.37000,0.00023)(0.38000,0.00031)(0.39000,0.00042)(0.40000,0.00056)(0.41000,0.00076)(0.42000,0.00102)(0.43000,0.00138)(0.44000,0.00186)(0.45000,0.00251)(0.46000,0.00339)(0.47000,0.00458)(0.48000,0.00618)(0.49000,0.00835)(0.50000,0.01127)(0.51000,0.01521)(0.52000,0.02053)(0.53000,0.02772)(0.54000,0.03742)(0.55000,0.05051)(0.56000,0.06818)(0.57000,0.09203)(0.58000,0.12423)(0.59000,0.16769)(0.60000,0.22636)(0.61000,0.30555)(0.62000,0.41245)(0.63000,0.55675)(0.64000,0.75154)(0.65,0.93633)
+          };
+          \draw [dashed, -*] (axis cs:0.616,0) -- (axis cs:0.616,0.41);
+          
+          \draw [dashed] (axis cs:0.9,0) -- (axis cs:0.9,0.4);
+          \draw [dashed] (axis cs:1.1,0) -- (axis cs:1.1,0.4);
+          \draw [<->] (axis cs:0.9,0.4) -- node[above] {$\Delta V_{DD}$} (axis cs:1.1,0.4);
+          
+          %\draw [dashed] (axis cs:0.6,0.3) -- (axis cs:0.6,0.8);
+          %\draw [dashed] (axis cs:0.55,0.55) -- (axis cs:0.55,0.8);
+          %\draw [<->] (axis cs:0.45,0.8) -- node[above] {$\Delta V_{Ref}$} (axis cs:0.55,0.8);
+      
+      \end{axis}
+    \end{tikzpicture}
+  \end{tabular}
+\end{tabular}
+
+$$I_D =  I_S \cdot e^{\frac{V_{BE}}{m \cdot V T}} \approx I_S \cdot e^{\frac{q \cdot V_{BE}}{k T}} \quad \Rightarrow \quad V_{Ref} = \frac{k T}{q} \ln \frac{I_D}{I_s} \qquad S = \frac{1}{ln \frac{I}{I_S}} \ll 1$$
+
+Diese Referenz-spannung kann nur im Bereich von $0.6 \text{ bis } 0.7 \text{ } V$ verwendet 
+werden. Um dies zu umgehen, wird häufig eine Zenerdiode (in Gegenrichtung) verwendet. 
+die häufigste Zener-Durchbruchspannung beträgt $5.6 \text{ } V$.
+
+\subsection{Bootstrap Referenz (PTAT-Stromquelle)}
+
+Diese Strom-Referenz Methode ist zwar unabhängig von $V_{DD}$, aber temperaturabhängig.
+der \cdef{Temperaturkoeffizient $T_C$} gibt die diese an. 
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.8, transform shape]
+      \draw (1,5) node [pmos, xscale=-1] (M3) {};
+      \draw (3,5) node [pmos] (M4) {};
+      \draw (1,3) node [nmos, xscale=-1] (M1) {};
+      \draw (3,3) node [nmos] (M2) {};
+      \draw (1,1) node [pnp, xscale=-1] (Q1) {};
+      \draw (5,5) node [pmos] (M5) {};
+      
+      %label transistors
+      \draw (M1.B) node[left] {$M_1$};
+      \draw (M2.B) node[right] {$M_2$};
+      \draw (M3.B) node[left] {$M_3$};
+      \draw (M4.B) node[right] {$M_4$};
+      \draw (Q1)  node {$Q_1$};
+      
+      %connsct Transistors
+      \draw (M3.S) to [short] (1,6);
+      \draw (M4.S) to [short] (3,6);
+      \draw (M5.S) to [short] (5,6);
+      \draw (M3.G) to [short] (M4.G);
+      \draw (M1.G) to [short] (M2.G);
+      \draw (M3.D) to [short, i_={\large $I_1$}] (M1.D);
+      \draw (M4.D) to [short, i={\large $I_2$}] (M2.D);
+      \draw (M1.S) to [short] (Q1.E);
+      \draw (Q1.C) to [short] (1,0);
+      \draw (M2.S) to [R, l={$R$}] (3,0);
+      \draw (Q1.B) to [short] (2,1) to [short, -*] (2,0) node[ground] {};
+      \draw (M5.D) to [short, i={\large $I_5$}, -o] (5,3.5);
+      
+      %draw Base Connectors
+      \draw (M1.D) to [short] ++(1,0)  to [short] (2,3);
+      \draw (M4.D) to [short] ++(-1,0) to [short] (2,5);
+      \draw (M4.D) to [short, *-] ++(1,0)  to [short] (4,5) to [short] (M5.B);
+      
+      %draw VDD and Ground
+      \draw (0,6) node[left] {\large $V_{DD}$} to [short, o-] (5,6);
+      \draw (1,0) to [short] (3,0);      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $I_1 = I_2$ \\
+    $\fmm V_{Ref} = V_{EB1} = m V_T \cdot \ln \left( \frac{I_1}{I_s} \right)$ \\
+    $\fmm V_{Ref} = V_{EB1} = I_2 \cdot R$ \\
+    $\fmm V_T = \frac{kT}{q} \left[ \frac{V}{^\circ K} \right]$ \\
+    $\fmm T_C = \frac{1}{V_t} \frac{dV_T}{dT} = \frac{1}{T}$ \\
+  \end{mtabular}
+\end{tabular}
+
+\subsection{Bandgap-Referenzen}
+
+\begin{center}
+  \begin{circuitikz} [scale=0.6, transform shape]
+    \draw (0,5) node[npn, xscale=-1] (npn) {};
+    \draw (0,7.5) node[left] {\Large $V_{DD}$} to [I, o-] (0,6) to [short] (npn.C)
+      (npn.E) to [short] (0,4) node[ground] {}
+      (npn.C) to [short, *-] ++(1,0) to [short, -*] (1,5) to [short] (npn.B);
+    
+    %PTAT-Quelle
+    \draw [thick] (-2,0) to (2,0) to (2,2) to (-2,2) to (-2,0)
+      (0,1) node {\Large PTAT-Quelle};
+      
+    %gain
+    \draw [thick] (4,2) to (6,1) to (4,0) to (4,2)
+      (4.6,1) node {\Large $K$};
+      
+    %sum
+    \draw [thick] (8,3) circle (0.6) node {\Large $\fmm \sum$};
+    
+    %connect
+    \draw (2,1) to [short] (4,1)
+      (6,1) to [short] (8,1) to [short] (8,2.4);
+    \draw (1,5) to [short] (8,5) to [short] (8,3.6);
+    \draw (8.6,3) to [short, -o] (10,3) node[right] {\Large $V_{Ref} = K \cdot V_T + V_{BE}$};
+    
+    %nodes
+    \draw (1,5) node [above right] {\Large $V_{BE}$};
+    \draw (3,1) node [above] {\Large $V_T$};
+    \draw (7,1) node [above] {\Large $K \cdot V_T$};
+    
+    %Temperatur Koeffizient
+    \draw [>=latex, <-] (4.5,5) to (4.5,6) node [above] {\Large $-2 \frac{mV}{^\circ K}$};
+    \draw [>=latex, <-] (3,1) to (3,0) node [below] {\Large $0.085 \frac{mV}{^\circ K}$};
+    \draw [>=latex, <-] (7,1) to (7,0) node [below] {\Large $2 \frac{mV}{^\circ K}$};
+    \draw [>=latex, <-] (9.2,3) to (9.2,2) node [below] {\Large $0 \frac{mV}{^\circ K}$};
+    
+  \end{circuitikz}
+\end{center}
+
+Bei dieser Schaltung wird die Spannung $V_{BE}$ über einem pn-Übergang abgegriffen. Dieser
+hat immer dieselbe negative Thermo-Spannung $V_T$. Nun wird eine PTAT-Quelle mit positivem 
+Temperaturkoeffizienten verwendet, welche mit einer Verstärkung auf den (vom Betrag) gleichen
+Wert bringt. Addiert man diese beiden Spannungen, so entsteht eine von der Temperatur 
+unabhängige Referenzspannung.
+
+\section{Spannungsquellen und -regler}
+
+\subsection{Spannungsquelle mit Dioden}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (0,4)
+        to [V={\Large $V_Q$}] (0,0);
+      \draw (0,4) 
+        to [R, l={\Large $R$},-*] (2,4)
+        to [\bipolLength=0.8cm, D, l={\Large $D_1$}] (2,3)
+        to [\bipolLength=0.8cm, D, l={\Large $D_2$}] (2,2);
+        
+      \draw (2,1.5) node {\Large $\vdots$};
+                        
+      \draw (2,1)
+        to [\bipolLength=0.8cm, D, l={\Large $D_n$}] (2,0)
+        to [short] (0,0);
+        
+      \draw (2,4) 
+        to [short, -o] (3,4) node [right] {\Large $V_{Out}$};
+    \end{circuitikz}
+  \end{tabular} & 
+  \begin{mtabular}{l}
+    $\fmm V_{Out} = n \cdot V_D \approx n \cdot 0.7V$ \\
+    $\fmm i_{Out \, max} = \frac{V_{Q}-V_{Out}}{R}$ 
+  \end{mtabular}
+\end{tabular}
+
+\subsection{Spannungsquelle mit Z-Diode}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (0,2)
+        to [V={\Large $V_Q$}] (0,0);
+      \draw (0,2) 
+        to [R, l={\Large $R$},-*] (2,2);
+      \draw (0,0)
+        to [short] (2,0)
+        to [zDo] (2,2);
+        
+      \draw (2,2) 
+        to [short, -o] (3,2) node [right] {\Large $V_{Out}$};
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $\fmm V_{Out} = V_Z \approx 2.7V$ \\
+    $\fmm i_{Out \, max} = \frac{V_{Q}-V_{Out}}{R}$ 
+  \end{mtabular}
+\end{tabular}
+
+
+\subsection{Spannungsquelle mit Längstransistor}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (2,4) node [npn, rotate=90] (npn) {};
+      \draw (0,4) 
+        to [short, o-*] (1,4)
+        to [R, l_={\Large $R$}, -*] (1,2);
+      \draw (0,0) 
+        to [short, o-*] (1,0)
+        to [zDo] (1,2);
+      \draw (1,2) to [short] (2,2) to [short] (npn.B);
+      \draw (1,4) to [short] (npn.C);
+      \draw (3,4) to [short, o-] (npn.E);
+      \draw (1,0) to [short, -o] (3,0);
+      
+      \draw [>=latex, ->, bend right=20, shorten <=2mm, shorten >=2mm] (0,4) to node[left] {\Large $V_{in}$} (0,0);
+      \draw [>=latex, ->, bend left=20, shorten <=2mm, shorten >=2mm] (3,4) to node[right] {\Large $V_{out}$} (3,0);      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $\fmm V_{Out} = V_Z - V_{BE} \approx 2.7V - 0.7V$ \\
+    $\fmm V_{Out \, max} = V_{in} - V_{BE}$
+  \end{mtabular}
+\end{tabular}
+  
+\subsection{Spannungsquelle mit Opamp}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (2,5) node [npn, rotate=90] (npn) {};
+      \draw (2,3) node [op amp, xscale=-1, rotate=90] (opamp) {};
+      
+      \draw (opamp.out) to [short] (npn.B);      
+      \draw (0,5) to [short, o-] (npn.C);
+      \draw (0,0) to [short, o-o] (5,0);
+      \draw (opamp.+) to [V_={\Large $V_{ref}$}, -*] (1.5,0);
+      \draw (opamp.-) to [short] ++(1.5,0) node (p1) {};
+      \draw (4,5) to [R, l={\Large $R_1$}, *-*] (p1) to [R, l={\Large $R_2$}, -*] (4,0);
+      \draw (npn.E) to [short, -o] (5,5);
+      
+      \draw [>=latex, ->, bend right=20, shorten <=2mm, shorten >=2mm] (0,5) to node[left] {\Large $V_{in}$} (0,0);
+      \draw [>=latex, ->, bend left=20, shorten <=2mm, shorten >=2mm] (5,5) to node[right] {\Large $V_{out}$} (5,0);      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $\fmm V_{Out} = \frac{R_1 + R_2}{R_1} \cdot V_{ref}$
+  \end{mtabular}
+\end{tabular}
+
+\subsection{Low-Drop-Out-Regler}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (2,6) node [pnp, rotate=90] (pnp) {};
+      \draw (3.5,3.5) node [op amp, rotate=180] (opamp) {};
+      \draw (pnp.B) to [short] (2,3.5) to [short] (opamp.out);
+      
+      \draw (0,2) 
+        to [V_={\Large $V_Q$}] (0,0);
+      \draw (0,2) 
+        to [short, *-] (0,6) 
+        to [short] (pnp.E);
+      \draw (0,2) 
+        to [R, l_={\Large $R_1$}] (5,2) 
+        to [short, *-] (5,3) 
+        to [short] (opamp.-);
+      \draw (pnp.C)
+        to [short, -*] (6,6)
+        to [R, l={\Large $R_3$}, -*] (6,4)
+        to [R, l={\Large $R_2$}, -*] (6,0);
+      \draw (5,0)
+        to [zDo, *-] (5,2);
+      \draw (opamp.+)
+        to [short] (6,4);
+      \draw (0,0)
+        to [short, -o] (7,0);
+      \draw (6,6)
+        to [short, -o] (7,6);
+          
+      \draw [>=latex, ->, bend left=20, shorten <=2mm, shorten >=2mm] (7,6) to node[right] {\Large $V_{out}$} (7,0);      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{p{0.4\columnwidth}}
+    Bei LDO-Regler darf der Spannungsabfall zwischen Ein- und Ausgang klein sein. 
+    Da dies ein Regler ist, muss er eine ungerade Anzahl pfadinversionen haben (für Negative-Feedback).
+  \end{tabular}
+\end{tabular}
+  
+\subsection{Parallel- oder Shunt-Spannungsregler}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (3,2) node [npn] (npn) {};
+      
+      \draw (0,4)
+        to [V_={\Large $V_Q$}] (0,0);
+      \draw (0,4) 
+        to [R, l^={\Large $R_1$}, -*] (2,4)
+        to [R, l_={\Large $R_2$}, -*] (2,2)
+        to [R, l_={\Large $R_3$}, -*] (2,0);
+      \draw (2,4)
+        to [short, -*] (3,4)
+        to [short] (npn.C);
+      \draw (npn.E)
+        to [short, -*] (3,0);
+      \draw (npn.B)
+        to [short] (2,2);
+      \draw (3,4)
+        to [short, -o] (4,4);
+      \draw (0,0) 
+        to [short, -o] (4,0);
+      
+      \draw [>=latex, ->, bend left=20, shorten <=2mm, shorten >=2mm] (4,4) to node[right] {\Large $V_{out}$} (4,0);      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{mtabular}{l}
+    $\fmm V_{Out} = V_{BE} \cdot \frac{R_2 + R_3}{R_2}$ \\
+    $\fmm \frac{dV_{out}}{dT} = -2 \cdot \frac{R_2 + R_3}{R_2} \left[\frac{mV}{K}\right]$
+  \end{mtabular}
+\end{tabular}
+
+\section{Ladungspumpen}
+
+\subsection{Switched Capacitor Schaltung}
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (0,2) 
+        to [switch, o-*] (2,2) node [above, xshift=-1cm, yshift=2mm] {\Large $S_1$}
+        to [switch,  -*] (4,2) node [above, xshift=-1cm, yshift=2mm] {\Large $S_2$}
+        to [short,   -o] (5,2);
+      \draw (2,2)
+        to [C, l={\Large $C_1$}, -*] (2,0);
+      \draw (4,2)
+        to [C, l={\Large $C_2$}, -*] (4,0);
+      \draw (0,0)
+        to [short, o-o] (5,0);
+        
+      \draw [>=latex, ->, bend right=30, shorten <=2mm, shorten >=2mm] (0,2) to node[left] {\Large $V_{in}$} (0,0);
+      \draw [>=latex, ->, bend left=30, shorten <=2mm, shorten >=2mm] (5,2) to node[right] {\Large $V_{out}$} (5,0);      
+   
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{p{0.5\columnwidth}}
+    Schalter $S_1$, $S_2$ sind nicht-überlappend. \\
+    \textbf{Phase 1}: $S_1$ geschlossen, $C_1$ wird aufgeladen: $Q_1 = C_1 \cdot V_{in}$ \\
+    \textbf{Phase 2}: $S_2$ geschlossen, Ladung $Q_1$ teilt sich auf $C_1$ und $C_2$ auf.
+  \end{tabular}
+\end{tabular}
+
+Nach dem ersten Zyklus mit \cdef{$V_{out_0}$: Ausgangsspannung vor dem ersten Zyklus}:
+$$Q_{tot_1} = C_1 \cdot V_{in} + C_1 \cdot V_{out_0} \qquad V_{out_1} = \frac{C_1 \cdot V_{in}}{C_1 + C_2}$$
+
+Die Ausgangsspannung nähert sich der Eingangsspannung, wenn $C_1 = C_2$. 
+Da sich die Spannung wie bei einer RC-Schaltung dem Endwert exponentiell annähert, kann ein Wiederstand $R_{eq}$ definiert werden (mit \cdef{$T$: Periodendauer}):
+$$R_{eq} = \frac{T}{C}$$
+
+\subsection{Spannungsinversion}
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (0,2) node [left] {\Large $V_{in}$}
+        to [switch, o-*] (3,2) node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_1$}
+        to [switch] (6,2)  node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_2$} node [ground] {};
+      \draw (0,0) node [ground] {}
+        to [switch, -*] (3,0) node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_1$}
+        to [switch, -o] (6,0) node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_2$} node [right] {\Large $V_{out}$};
+      \draw (3,2) node [above] {\Large $V_{CP}$}
+        to [C, l={\Large $C$}] (3,0) node [below] {\Large $V_{CN}$};
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{p{0.5\columnwidth}}
+    \textbf{Phase 1}: Schalter $S_1$ geschlossen. $C$ wird aufgeladen. \\
+    \textbf{Phase 2}: Schlater $S_2$ geschlossen. $V_{CP}$ springt auf $V_{GND}$. Also muss $V_{CN}$ auch denselben Sprung nach unten machen.
+  \end{tabular}
+\end{tabular}
+
+$$V_{out} = -V_{in}$$
+
+\subsection{Spannungsverdopplung}
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (0,2) node [left] {\Large $V_{in}$}
+        to [switch, o-*] (3,2) node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_1$}
+        to [switch] (7,2)  node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_2$}    
+        to [C, l={\Large $C_2$}] (7,0) node [ground] {};
+      \draw (7,2) 
+        to [short, -o] (8,2) node [right] {\Large $V_{out}$};
+      \draw (0,0) node [ground] {}
+        to [switch, -*] (3,0) node [above, xshift=-1.5cm, yshift=2mm] {\Large $S_1$}
+        to [switch, -o] (5,0) node [above, xshift=-1cm, yshift=2mm] {\Large $S_2$} node [right] {\Large $V_{in}$};
+      \draw (3,2) node [above] {\Large $V_{CP}$}
+        to [C, l_={\Large $C_1$}] (3,0) node [below] {\Large $V_{CN}$};
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{p{0.4\columnwidth}}
+    \textbf{Phase 1}: Schalter $S_1$ geschlossen. $C$ wird aufgeladen. \\
+    \textbf{Phase 2}: Schlater $S_2$ geschlossen. $V_{CN}$ springt auf $V_{in} \: \rightarrow \: V_{CP}$ springt auf $2V_{in}$
+  \end{tabular}
+\end{tabular}
+
+
+\section{Schaltregler}
+% \begin{tabular}{ll}
+%   \begin{dtabular}
+%     $S$ & Stabilitätsfaktor \\
+%     $R_a$ & Dyn. Ausgangswiederstand \\
+%     $T_C$ & Temperaturkoeffizient \\
+%   \end{dtabular} &
+%   \begin{mtabular}{l}
+%     $\fmm S = \frac{\Delta V_e / V_e}{\Delta V_a / V_a}$ \\
+%     $\fmm R_a = \frac{dV_a}{dI_a}$ \\
+%     $\fmm T_C = \frac{1}{V_a} \frac{dV_a}{dT}$ \\
+%   \end{mtabular}
+% \end{tabular}
+
+\subsection{Aufwärtswandler}
+
+\begin{ddtabular}
+  $T_{on}$ & Dauer der Ladephase &
+  $\Delta I_{L_{on}}$ & Stromdifferenz der Ladephase \\
+  $T_{off}$ & Dauer der Entladephase &
+  $\Delta I_{L_{off}}$ & Stromdifferenz der Entladephase \\
+\end{ddtabular}
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (0,2) 
+        to [L, l={\Large $L$},i={\Large $i_L$}, o-] (3,2) 
+        to [\bipolLength=0.8cm, D, l={\Large $D$}, v>={\Large $V_D$}] (6,2)
+        to [short, -o] (7,2);
+      \draw (0,0) to [short, o-o] (7,0);
+      \draw (3,2) to [switch, *-*] (3,0) node[left, yshift=1cm] {\Large $S$};
+      \draw (6,2) to [C, l={\large $C$}, *-*] (6,0);
+
+      \draw [>=latex, ->, bend right=20, shorten <=2mm, shorten >=2mm] (0,2) to node[left] {\Large $V_{in}$} (0,0);
+      \draw [>=latex, ->, bend left=30, shorten <=2mm, shorten >=2mm] (7,2) to node[right] {\Large $V_{out}$} (7,0);
+      
+    \end{circuitikz} 
+  \end{tabular} &
+  \begin{tabular}{l}
+    Lasephase: S geschlossen (on) \\
+    Entladephase: S offen (off) \\
+  \end{tabular}
+\end{tabular}
+
+$$\Delta I_{L_{on}}  = \frac{V_{in}}{L} \cdot T_{on} \qquad \Delta I_{L_{off}} = \frac{V_{in} - V_{out}}{L} \cdot T_{off}$$
+$$\text{im Gleichgewicht:} \quad \Delta I_{L_{on}} = -\Delta I_{L_{off}} \qquad V_{out} = V_{in} \cdot \left(1 + \frac{T_{on}}{T_{off}}\right)$$
+
+\subsection{Abwärtswandler}
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (0,3) to [switch, o-] (2,3) node [below, xshift=-1cm] {\Large $S$} 
+        to [L, l={\Large $L$}, i={\Large $i_L$}] (5,3) to [short, -o] (6,3);
+      \draw (0,0) to [short, o-o] (6,0);
+      \draw (2,0) to [D, l={\Large $D$}, v>={\Large $V_D$}] (2,3);
+      \draw (5,3) to [C, l={\Large $C$}] (5,0);
+      
+      \draw [>=latex, ->, bend right=20, shorten <=2mm, shorten >=2mm] (0,3) to node[left] {\Large $V_{in}$} (0,0);
+      \draw [>=latex, ->, bend left=30, shorten <=2mm, shorten >=2mm] (6,3) to node[right] {\Large $V_{out}$} (6,0);
+      
+    \end{circuitikz}
+  \end{tabular}
+  \begin{tabular}{l}
+    Lasephase: S geschlossen (on) \\
+    Entladephase: S offen (off) \\
+    $V_L = - \left(V_{out} + V_D\right)$
+  \end{tabular}
+\end{tabular}
+$$\Delta I_{L_{on}} = \frac{V_{in} - V_{out}}{L} \cdot T_{on} \qquad \Delta I_{L_{off}} = \frac{V_{out} + V_D}{L} \cdot T_{off}$$
+$$\text{im Gleichgewicht} \quad V_{out} = \frac{T_{on}}{T_{on} + T_{off}} \cdot V_{in} - \frac{T_{off}}{T_{on} + T_{off}} \cdot V_D \approx \frac{T_{on}}{T_{on} + T_{off}} \cdot V_{in} $$
+
+Die Effizienz dieser Wandler kann verbessert werden, indem statt einer Silizium-Diode 
+($V_D \approx 0.7V$) eine Schottky-Diode ($V_D \approx 0.3V$) verwendet wird. Noch besser
+ist ein MOSFET, welcher nur einen On-Wiederstand $R_{DS_{on}}$ im $m\Omega$ bereich besitzt.
+
+\subsection{Invertierender Wandler}
+
+\begin{tabular}{ll}
+  \begin{tabular}{l}
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (0,3) to [switch, o-] (3,3) node[below, xshift=-1.5cm] {\Large $S$} 
+        to [switch] (6,3) [switch] node[below, xshift=-1.5cm] {\Large $\overline{S}$}
+        to [short, -o] (7,3);
+      \draw (0,0) to [short, o-o] (7,0);
+      \draw (3,3) to [L, l_={\Large $L$}, v^>={\Large $V_L$}] (3,0);
+      \draw (6,3) to [C, l={\Large $C$}] (6,0);
+      
+      \draw [>=latex, ->, bend right=20, shorten <=2mm, shorten >=2mm] (0,3) to node[left] {\Large $V_{in}$} (0,0);
+      \draw [>=latex, ->, bend left=30, shorten <=2mm, shorten >=2mm] (7,3) to node[right] {\Large $V_{out}$} (7,0);
+      
+    \end{circuitikz}
+  \end{tabular} &
+  \begin{tabular}{l}
+    $S = \text{on}$: erzeugung neg. Spannung \\
+    $\fmm V_L = V_{in} = L \cdot \frac{\Delta I_L}{\Delta t}$ \\
+    $S = \text{off}$: negative Spannung über $L$ \\
+    $\fmm V_{out} = V_L = -L \cdot \frac{\Delta I_L}{\Delta t}$
+  \end{tabular}
+\end{tabular}
+
+$$\text{wenn Eingeschwungen:} \quad V_{out} = V_L \cdot \frac{T_{on}}{T_{off}}$$
+
+\section{Passive Elemente}
+\subsection{Wiederstände}
+\begin{tabular}{ll}
+  \begin{dtabular}
+    $\rho$ & Spez. Wiederstand \\
+    $l$ & Länge des Leiters \\
+    $A$ & Fläche des Leiters \\
+  \end{dtabular} &
+  \begin{mtabular}{c}
+    $\fmm R = \rho \cdot \frac{l}{A}$ \\
+    \begin{circuitikz} [scale=0.6, transform shape]
+      \draw (0,1) to [L, l={\Large $L_s$}, o-*] (2,1) to [R, l={\Large $R$}, -*] (4,1) to [short, -o] (5,1);
+      \draw (2,1) to [short] (2,0) to [C, l_={\Large $C_p$}] (4,0) to [short] (4,1);
+    \end{circuitikz} \\
+    $L_s \approx 5 \left[ nH \right] \qquad C_p \approx 0.5 \left[ pF \right]$
+  \end{mtabular}
+\end{tabular}
+
+\subsection{Temperaturabhängige Wiederstände}
+
+\subsubsection{PTC-Wiederstände}
+
+Kaltleiter, positiver Temperaturkoeffizient: Wiederstand steigt mit steigernder \cdef{Temperatur $\theta \left[^\circ C\right]$}.
+
+$$T > 0^\circ C: \quad R = R_0 \cdot \left( 1 + a \theta + b \theta^2 \right)$$
+$$T < 0^\circ C: \quad R = R_0 \cdot \left(1 + a \theta + b \theta^2 + c \theta^3 \cdot (\theta - 100^\circ C) \right)$$
+
+$$a = 3.9083 \left[ \frac{10^{-3}}{^\circ C} \right], \: b = -5.775 \left[\frac{10^{-7}}{^\circ C^2}\right], \: -4.183 \left[\frac{10^{-12}}{^\circ C^4}\right]$$
+
+\subsubsection{NTC-Wiederstände} 
+
+Heissleiter, negativer Temperaturkoeffizient: Wiederstand sinkt mit steigernder Temperatur:
+\begin{center}
+  \begin{ddtabular}
+    $T [^\circ K]$ & Temperatur &
+    $T_R [^\circ K]$ & Referenztemperatur \\
+    $B$ & Materialkonstante &
+    $R_R$ & Referenzwiederstand \\
+  \end{ddtabular}
+\end{center}
+
+$$R = R_R \cdot e^{B \cdot \left( \frac{1}{T}- \frac{1}{T_R} \right)}$$
+
+\subsection{Fotowiederstände LDR}
+
+Wenn Licht auf die fotoempfindliche Fläche des LDR's trifft, verringert sich der Wiederstand. 
+Dunkelwiederstand typischerweise zwischen $1 \ldots 100 M\Omega$, der Hellwiederstand (bei 1000 lx) typischerweise zwischen $0.1 \ldots 2 k\Omega$.
+Die Wiederstandsänderung ist relativ langsam (mehrere $ms$ verzögert.)
+
+\subsection{Kapazitäten}
+\begin{tabular}{ll}
+  \begin{dtabular}
+    $A$ & Fläche des Kondensators \\
+    $d$ & Abstand der Leiter \\
+    $\varepsilon_0$ & $= 8.854 \cdot 10^{-12} \left[\frac{F}{m}\right]$  \\
+    $\varepsilon_r$ & Relative Permitivität \\
+    $R_{Leak}$ & Leckwiederstand \\
+  \end{dtabular} &
+  \begin{tabular}{c}
+    $\fmm C = \frac{\varepsilon_r \cdot \varepsilon_0 \cdot A}{d}$\\
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (0,0) node [above] {\Large $+$} to [short, o-*] (1,0) to [C, l_={\Large $C$}, -*] (3,0) to [R, l={\Large $R_{e}$}] (5,0) to [L, l={\Large $L_{e}$}, -o] (7,0) node [above] {\Large $-$};
+      \draw (1,0) to [short] (1,1) to [R, l={\Large $R_{Leak}$}] (3,1) to [short] (3,0); 
+    \end{circuitikz}
+  \end{tabular}
+\end{tabular}
+
+\subsection{Induktivitäten}
+\begin{tabular}{ll}
+  \begin{dtabular}
+    $N$ & Windungszahl \\
+    $\Phi$ & Magnetischer Fluss \\
+    $I$ & Strom durch die Spule \\
+    $\mu_0$ & $=4\pi \cdot 10^{-7} \left[\frac{N}{A^2}\right]$ \\
+  \end{dtabular} &
+  \begin{mtabular}{c}
+    $\fmm L = \frac{N \cdot \Phi}{I}$\\
+    $\fmm L_{Ring} = N^2 \frac{\mu_0 \mu_r A}{2 \pi r} \quad \fmm L_{Zylinder} = N^2 \frac{\mu_0 \mu_r A}{l}$ \\
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (0,1) to [short, o-*] (1,1) to [L, l_={\Large $L$}, -*] (3,1) to [R, l={\Large $R_{Cu}$}, -*] (5,1) to [short, -o] (6,1);
+      \draw (1,1) to [short] (1,2) to [R, l={\Large $R_{Fe}$}] (3,2) to [short] (3,1);
+      \draw (1,1) to [short] (1,0) to [C, l_={\Large $C_p$}] (5,0) to [short] (5,1);
+    \end{circuitikz}
+  \end{mtabular}
+\end{tabular}
+
+\end{twocolumn}
+\end{document}
