@@ -324,6 +324,8 @@ $$P_Q = \frac{q^2}{12} \quad SNR \approx 1.76 + n \cdot 6 \text{dB}$$
 
 \section{Digital-Analog Wandler DAC}
 
+$$\text{Quantisierungsschritt:} \quad q = \frac{V_{ref_p} - V_{ref_n}}{2^n}$$
+
 \subsection{Strom-DAC nach Parallelverfahren}
 
 \begin{center}
@@ -409,12 +411,9 @@ $V_A$ und $V_B$ können variabel sein.
 
 Dieser Wandler benötigt nur $n$ Schalter und $n+1$ wiederstände. 
 Jedoch ist die Stetigkeit nicht garantiert.
-Ausserdem sind grosse Wertebereiche für die Wiederstände notwendig.
-Um den Ausgang $V_{Out}$ belasten zu können, muss ein Buffer dazugeschaltet werden.
-
 $$V_{Out} = \frac{B_0 \cdot \frac{1}{8R} + B_1 \cdot \frac{1}{4R} + B_2 \cdot \frac{1}{2R} + B_3 \cdot \frac{1}{R}}{\frac{2}{R}}\cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
 
-\subsection{Kapazitiver DAC (Charge Scaling)}
+\subsection{Kapazitiver DAC, Wägeverfahren}
 
 \begin{center}
   \begin{circuitikz} [scale=0.6, transform shape]
@@ -452,9 +451,13 @@ $$V_{Out} = \frac{B_0 \cdot \frac{1}{8R} + B_1 \cdot \frac{1}{4R} + B_2 \cdot \f
 Mit den zusätzlichen Schalter $S_0$ und $S_1$ werden die Anfangsbedingungen gesetzt. 
 Mit dem Schalter $S_2$ wird der Ausgang gültig. 
 
-$$C_1 = B_3 \cdot 8 C + B_2 \cdot 4C + B_1 \cdot 2C + B_0 \cdot C$$
-$$C_2 = \overline{B_3} \cdot 8 C + \overline{B_2} \cdot 4C + \overline{B_1} \cdot 2C + \overline{B_0} \cdot C + C$$
-$$V_{Out} = \frac{C_1}{C_1 + C_2} \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n} = \frac{C_1}{2^n \cdot C}  \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
+%$$C_1 = B_3 \cdot 8 C + B_2 \cdot 4C + B_1 \cdot 2C + B_0 \cdot C$$
+%$$C_2 = \overline{B_3} \cdot 8 C + \overline{B_2} \cdot 4C + \overline{B_1} \cdot 2C + \overline{B_0} \cdot C + C$$
+%$$V_{Out} = \frac{C_1}{C_1 + C_2} \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n} = \frac{C_1}{2^n \cdot C}  \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
+
+$$C_{res} = B_3 \cdot 8C + B_2 \cdot 4C + B_1 \cdot 2C + B_0 \cdot C$$
+$$V_{out} = V_{ref_n} + \frac{C_{res}}{C_{fb}} \cdot (V_{ref_p}-V_{ref_n})$$
+$$q = (V_{ref_p}-V_{ref_n}) \cdot \frac{1}{2^n}, \quad n = \text{anz. Schalter } B_n$$
 
 \subsection{DAC mit R-2R-Netzwerk}
 
@@ -473,10 +476,10 @@ $$V_{Out} = \frac{C_1}{C_1 + C_2} \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n} = \f
     \draw (5,5) to [resistor, l={\Large $2R$}, *-] (B1.in) node[right, yshift=-5mm] {\Large $B_1$};
     \draw (7,5) to [resistor, l={\Large $2R$}, *-] (B0.in) node[right, yshift=-5mm] {\Large $B_0$};
     
-    \draw (B3.out 1) to [short](0.69, 1.5) to (opamp.-);
+    \draw (B3.out 1) to [short](0.69, 1.5) to [short] (6.69,1.5);
     \draw (B2.out 1) to [short, -*] (2.69,1.5);
     \draw (B1.out 1) to [short, -*] (4.69,1.5);
-    \draw (B0.out 1) to [short, -*] (6.69,1.5);
+    \draw (B0.out 1) to [short, -*] (6.69,1.5) to [short, i={\Large $I_{DAC}$}] (opamp.-);
     
     \draw (0, 0.5) node[left]{\Large $V_{ref_n}$} to [short] (opamp.+);
     \draw (B3.out 2) to [short, -*] (1.31,0.5);
@@ -490,6 +493,8 @@ $$V_{Out} = \frac{C_1}{C_1 + C_2} \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n} = \f
     
   \end{circuitikz}
 \end{center}
+
+$$I_{DAC} = \frac{V_{ref_p} - V_{ref_n}}{R} \cdot \left( \frac{B_3}{1} + \frac{B_2}{2} + \frac{B_1}{4} + \frac{B_0}{8} \right)$$
 
 \subsection{Zahlverfahren (PWM)}
 
@@ -719,7 +724,7 @@ Als DAC sollte vorzugsweise ein kapazitiver DAC verwendet werden.
 
 $$V_{int_{max}} = \int_0^{t_{int}} - \frac{V_{in}}{R_i \cdot C_i} \cdot dt = - \frac{V_{in}}{R_i \cdot C_i} \cdot t_{int}$$
 %$$\text{Abintegration: } \quad V_{int}(t) = V_{int_{max}} - \frac{V_{ref}}{R_i \cdot C_i} \cdot t$$
-$$t_{abint} = - \frac{V_{in} \cdot t_{int}}{V_{ref}} \Rightarrow V_{in} = - V_{ref} \cdot \frac{t_{abint}}{t_{int}}$$
+$$V_{in} = - (V_{ref}-V_{A_{GND}}) \cdot \frac{t_{abint}}{t_{int}} + V_{A_{GND}} \Rightarrow t_{abint} = - \frac{V_{in} \cdot t_{int}}{V_{ref} + V_{A_{GND}}} - V_{A_{GND}}$$
 
 Der Dual-Slope Wandler hat ein Tiefpass-verhalten. Ausserdem werden Frequenzen von 
 $\fmm \frac{k}{t_{int} + t_{abint}}, k \in \mathbb{N}$ perfekt unterdrückt. Um den Netzbrumm (50Hz) zu Unterdrücken,
@@ -827,7 +832,7 @@ Es sind aber sehr grosse Polgüten möglich.
 \end{center}
 
 $$G(s) = \frac{-\frac{R_2}{R_1}}{1 + s \cdot C_2 \cdot \left(R_2 + R_3 + \frac{R_2 R_3}{R_1}\right) + s^2 \cdot C_1 C_2 R_2 R_3}$$
-$$Q = \frac{\sqrt{C_1 C_2 R_2 R_3}}{C_2 \cdot \left( R_2 + R_3 + \frac{R_2 R_3}{R_1} \right)}$$
+$$Q = \frac{\sqrt{C_1 C_2 R_2 R_3}}{C_2 \cdot \left( R_2 + R_3 + \frac{R_2 R_3}{R_1} \right)} \quad f_{3dB} = \frac{1}{\sqrt{2 \pi C_1 C_2 R_2 R_3}}$$
 
 \subsection{Maison-Regel}
 
@@ -932,18 +937,19 @@ beeinflussen sie direkt die Rauschspannung.
       $B$ & Bandbreite \\
     \end{dtabular}
     \begin{mtabular}{l}
+      \cdef{$\e_{vn} \left[\frac{V}{\sqrt{Hz}}\right] : \:$ } \cdef{Spannungsdichte} \\
       $\fmm \overline{v_n} = \frac{1}{T_t} \int_{T_t} v_n(t) \cdot dt = 0$ \\
       $\fmm \overline{v_n^2} = \frac{1}{T_t} \int_{T_t} v_n^2(t) \cdot dt \neq 0$ \\
       $\fmm v_{n,rms} = \sqrt{\overline{v_n^2}}$  \\
     \end{mtabular}
-  \end{tabular}
+  \end{tabular} 
 \end{center}
 
 \subsection{Rauschleistungen}
 \begin{center}
   \begin{mtabular}{ll}
-    Weisses Rauschen & $\fmm \overline{v^2} = \int_{f_L}^{f_H} K \cdot df = K \cdot (f_H - f_L)$ \\
-    $1/f$ Rauschen & $\fmm \overline{v^2} = \int_{f_L}^{f_H} \frac{K}{f} df = K \cdot \ln{\frac{f_H}{f_L}}$ \\
+    Weisses Rauschen & $\fmm \overline{v^2} = \int_{f_L}^{f_H} e_{vn}^2 \cdot df = K \cdot (f_H - f_L)$ \\
+    $1/f$ Rauschen & $\fmm \overline{v^2} = \int_{f_L}^{f_H} \frac{e_{vn}^2}{f} df = K \cdot \ln{\frac{f_H}{f_L}}$ \\
   \end{mtabular}
 \end{center}
 
@@ -962,7 +968,8 @@ beeinflussen sie direkt die Rauschspannung.
     \begin{mtabular}{l}
       $\fmm \overline{v_n^2} = 4 k T B \cdot R$ \\
       $\fmm \overline{i_n^2} = 4 k T B \cdot G$ \\
-      Serieschaltung: $\fmm \overline{v_{tot}^2} = \overline{v_1^2} + \overline{v_2^2}$
+      Serieschaltung: $\fmm \overline{v_{tot}^2} = \overline{v_1^2} + \overline{v_2^2}$ \\
+      $\fmm \Phi_V = \sqrt{4 k T R}$
     \end{mtabular}
   \end{tabular}
 \end{center}
@@ -1028,9 +1035,9 @@ beeinflussen sie direkt die Rauschspannung.
   \end{circuitikz}
 \end{center}
 
-Das Ausgangsrauschen $\overline{v_{out}^2}$ berechnet sich durch Superposition. 
-Es werden immer alle ausser eine Rauschquelle ausgeschaltet und ihren Einfluss berechnet.
-Danach werden alle Einflüsse zusammenaddiert. 
+Das Produkt aus \cdef{Signal-Bandbreite $B_S$} und der \cdef{Verstärkung $A$} ist immer konstant. 
+Für die \cdef{Effective Noise Bandwidth $B_{en}$} gilt folgende Beziehung: 
+$$B_{en} = \frac{\pi}{2} B_S$$
 
 $$\overline{v_{tot}^2} = \int \left( 
     4kTR_2 A 
@@ -1043,15 +1050,15 @@ $$\overline{v_{tot}^2} = \int \left(
 $$\text{mit} \quad A = \left(\frac{R_1 + R_2}{R_1}\right)$$
 
 Bei CMOS-Opamps ist das stromrauschen meist zu vernachlässigen. Ausserdem kann der Wiederstand $R_3=0$
-vernachlässigt werden. Ausserdem glit: \cdef{$e_w [Hz]$: Noise / Root (aus dem Datenblatt), $f_{enc} [Hz]$: 
+vernachlässigt werden. Ausserdem glit: \cdef{$v_n [Hz]$: Noise / Root (aus dem Datenblatt), $f_{enc} [Hz]$: 
 Noise Corner Frequency (aus dem Datenblatt), $B_{en}$: Effective Noise Bandwidth}
 
-$$\overline{v_{tot}^2} = B_{en} \cdot 4kTR_2 A + e_w^2 A^2 \left[ f_{enc} \ln{\left( \frac{f_H}{f_L} \right)} + B_{en} \right]$$
+$$\overline{v_{tot}^2} = B_{en} \cdot 4kTR_2 A + v_n^2 A^2 \left[ f_{enc} \ln{\left( \frac{f_H}{f_L} \right)} + B_{en} \right]$$
 
 Wenn ausserdem die Bandbreite $B \gg f_{enc}$ (mindestens 10 mal grösser) ist, können weitere
 Vernachlässigungen gemacht werden.
 
-$$\overline{v_{tot}^2} = 4kT \cdot R_2 \cdot A \cdot B_{en} + e_w^2 \cdot A^2 \cdot B_{en} $$
+$$\overline{v_{tot}^2} = 4kT \cdot R_2 \cdot A \cdot B_{en} + v_n^2 \cdot A^2 \cdot B_{en} $$
 
 \section{Spannungsreferenzen}
 
@@ -1723,6 +1730,97 @@ Die Wiederstandsänderung ist relativ langsam (mehrere $ms$ verzögert.)
       \draw (1,1) to [short] (1,0) to [C, l_={\Large $C_p$}] (5,0) to [short] (5,1);
     \end{circuitikz}
   \end{mtabular}
+\end{tabular}
+
+\section{Grundlegende Formeln}
+
+\subsection{Grundelemente}
+
+\begin{tabular}{c|c|c}
+
+
+  \textbf{Wiederstand R} &  
+  \textbf{Kapazität C} &
+  \textbf{Induktivität L} \\
+
+  \begin{tabular}{c}
+    \begin{circuitikz} 
+      \draw (0,0) to [R, l=$R$] (2,0);
+    \end{circuitikz} \\
+    $\fmm u(t) = R \cdot i(t)$ \\
+    $\fmm i(t) = \frac{1}{R} \cdot u(t)$ \\
+    $\fmm \underline{Z}_R = R$ \\
+  \end{tabular}
+  &
+  \begin{tabular}{c}
+    \begin{circuitikz} 
+      \draw (0,0) to [C, l=$C$] (2,0);
+    \end{circuitikz} \\
+    $\fmm u(t) = \frac{1}{C} \int_0^t i(\tilde{t})d\tilde{t}$ \\
+    $\fmm i(t) = C \cdot \frac{du(t)}{dt}$ \\
+    $\fmm \underline{Z}_C = \frac{1}{j \omega C}$ \\
+    Spannung springt nicht
+  \end{tabular}
+  &
+  \begin{tabular}{c}
+    \begin{circuitikz} 
+      \draw (0,0) to [L, l=$L$] (2,0);
+    \end{circuitikz}\\
+    $\fmm u(t) = L \cdot \frac{di(t)}{dt}$ \\
+    $\fmm i(t) = \frac{1}{L} \int_0^t u(\tilde{t})d\tilde{t}$ \\
+    $\fmm \underline{Z}_C = j \omega L$ \\
+    Strom springt nicht
+  \end{tabular} 
+  
+\end{tabular} 
+
+\subsection{Schaltvorgänge}
+$$u(t) = U_2 + (U_1 -U_2) \cdot e^{\frac{-t}{\tau}} \qquad i(t) = I_2 + (I_1 - I_2) \cdot e^{\frac{-t}{\tau}} \qquad \tau = R C = \frac{L}{R}$$
+
+\subsection{Einige OpAmp Schaltungen}
+
+\begin{tabular}{ll}
+  \begin{tabular}{c}
+    \textbf{Invertierender Verstärker} \\
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (5,0.5) node [op amp, yscale=1.02] (int) {};
+      \draw (2,1) node[left] {\Large $V_{in}$}  to [resistor, l={\Large $R_1$}, o-] (4,1) to [short] (int.-);
+      \draw (int.+) to[short, -o] (2,0) node[left] {\Large $V_{A_{GND}}$};
+      \draw (int.out) to [short, -o] (7.5,0.5) node [below] {\Large $V_{out}$}; 
+      \draw (6.5,0.5) to [short, *-] (6.5,2) to [R, l_={\Large $R_F$}] (3.8,2) to [short, -*] (3.8,1); 
+    \end{circuitikz} \\
+    $\fmm V_{out} = -\frac{R_F}{R_1} \cdot (V_{in} - V_{A_{GND}}) + V_{A_{GND}}$ \\
+  \end{tabular} &  
+  \begin{tabular}{c}
+    \textbf{Integrator} \\
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (3,0.5) node [op amp, yscale=1.02] (opamp) {};
+      \draw (0,1) node[left] {\Large $V_{in}$}  to [resistor, l={\Large $R$, o-}] (2,1) to [short] (opamp.-);
+      \draw (opamp.+) to[short, -o] (0,0) node[left] {\Large $V_{A_{GND}}$};
+      \draw (opamp.out) to [short, -o] (5.5,0.5) node [below] {\Large $V_{out}$}; 
+      \draw (4.5,0.5) to [short, *-] (4.5,2) to [C, l_={\Large $C$}] (1.8,2) to [short, -*] (1.8,1); 
+    \end{circuitikz} \\
+    $$\fmm V{out} = \frac{1}{RC} \cdot \int (V_{in} - V_{A_{GND}}) \cdot dt$$
+  \end{tabular} \\  
+\end{tabular}
+
+\begin{tabular}{ll}
+  \begin{tabular}{c}
+    \textbf{Tiefpass Filter} \\
+    \begin{circuitikz}[scale=0.6, transform shape]
+      \draw (5,0.5) node [op amp, yscale=1.02] (int) {};
+      \draw (2,1) node[left] {\Large $V_{in}$}  to [resistor, l={\Large $R_1$}, o-] (4,1) to [short] (int.-);
+      \draw (int.+) to[short, -o] (2,0) node[left] {\Large $V_{ref}$};
+      \draw (int.out) to [short, -o] (7.5,0.5) node [below] {\Large $V_{out}$}; 
+      \draw (6.5,0.5) to [short, *-] (6.5,2) to [R, l={\Large $R_F$}] (3.8,2) to [short, -*] (3.8,1); 
+      \draw (6.5,2) to [short, *-] (6.5,3) to [C, l_={\Large $C_F$}] (3.8,3) to [short, -*] (3.8,2);
+    \end{circuitikz}
+  \end{tabular} & 
+  \begin{tabular}{c}
+    $\fmm \omega_{c_{3db}} = \frac{1}{R_F \cdot C_F} \qquad f_{c_{3db}} = \frac{1}{2\pi \cdot R_F \cdot C_F}$ \\
+    $\fmm H(s) = \frac{V_{out}}{V_{in}} = \frac{R_F}{s R_1 R_F C_F + R_1}$ 
+    
+  \end{tabular}
 \end{tabular}
 
 \end{twocolumn}
