@@ -6,3 +6,4 @@
 *.synctex.gz
 *.auxlock
 tikz/*
+/Elo2_fs.pdf
