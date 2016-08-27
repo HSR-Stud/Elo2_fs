@@ -318,7 +318,8 @@ Die DNL ist die Differenz des Spannungsinkrements um ein LSB und dem idealen Spa
 Für monotone Wandler muss $E_{DNL} > -1 LSB$ betragen. sonst wird es ein nicht-monotoner Wandler.
 
 \subsection{Quantisierung und Signal to Noise Ratio}
-das Quantisierungsrauschen kann als lineare Rauschquelle modelliert werden. Pro bit erhäht sich das SNR um 6dB
+Das Quantisierungsrauschen kann als lineare Rauschquelle modelliert werden.\newline
+Pro bit erhöht sich die SNR um 6dB.
 
 $$P_Q = \frac{q^2}{12} \quad SNR \approx 1.76 + n \cdot 6 \text{dB}$$
 
@@ -380,7 +381,7 @@ $$I_{Out} = D \cdot I = D \cdot \frac{V_{Ref}}{R}$$
 \end{circuitikz}
 \end{center}
 
-Bei diesem Wandler ist ein automatisierter Elektronik-Test möglich. der Wert $D$ muss im PROM gespeichert werden. 
+Bei diesem Wandler ist ein automatisierter Elektronik-Test möglich. Der Wert $D$ muss im PROM gespeichert werden. 
 $V_A$ und $V_B$ können variabel sein. 
 
 \subsection{DAC nach Wägeverfahren}
@@ -409,7 +410,7 @@ $V_A$ und $V_B$ können variabel sein.
   \end{circuitikz}
 \end{center}
 
-Dieser Wandler benötigt nur $n$ Schalter und $n+1$ wiederstände. 
+Dieser Wandler benötigt nur $n$ Schalter und $n+1$ Wiederstände. 
 Jedoch ist die Stetigkeit nicht garantiert.
 $$V_{Out} = \frac{B_0 \cdot \frac{1}{8R} + B_1 \cdot \frac{1}{4R} + B_2 \cdot \frac{1}{2R} + B_3 \cdot \frac{1}{R}}{\frac{2}{R}}\cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
 
@@ -522,7 +523,7 @@ $$I_{DAC} = \frac{V_{ref_p} - V_{ref_n}}{R} \cdot \left( \frac{B_3}{1} + \frac{B
 \end{center}
 
 Der Schalter schaltet immer zwischen $V_{ref_p}$ und $V_{ref_n}$ um. 
-der nachfolgende Tiefpass $RC$ glättet das ganze Signal. 
+Der nachfolgende Tiefpass $RC$ glättet das ganze Signal. 
 Diese Schaltung ist sehr einfach und ermöglicht eine hohe Auflösung.
 Jedoch ist sie sehr langsam und benötigt eine grosse Zeitkonstante.
 Es gilt folgende Beziehung: $\fmm V_{out} = V_{ref} \cdot \frac{n}{N}$
@@ -620,7 +621,7 @@ Es gilt folgende Beziehung: $\fmm V_{out} = V_{ref} \cdot \frac{n}{N}$
     \end{circuitikz}
   \end{tabular} &
   \begin{tabular}{p{0.3\columnwidth}}
-    Dieses Verfahren ist sehr schnell. es braucht jedoch $2^n$ Wiederstände und $2^n-1$ Komparatoren.
+    Dieses Verfahren ist sehr schnell. Es braucht jedoch $2^n$ Wiederstände und $2^n-1$ Komparatoren.
   \end{tabular}
 \end{tabular}
 
@@ -660,7 +661,7 @@ Es gilt folgende Beziehung: $\fmm V_{out} = V_{ref} \cdot \frac{n}{N}$
 \end{center}
 
 Der Sample and Hold-Teil speichert das Eingangssignal während der Wandlung. 
-der DAC-Ausgang nähert sich schrittweise approximativ dem Eingangssignal an.
+Der DAC-Ausgang nähert sich schrittweise approximativ dem Eingangssignal an.
 Der Wandler startet in der Mitte des möglichen Bereichs und arbeitet sich dann immer weiter vor. 
 Mit jedem Schritt wird die genauigkeit vergörssert. 
 Als DAC sollte vorzugsweise ein kapazitiver DAC verwendet werden.
@@ -1062,7 +1063,7 @@ $$\overline{v_{tot}^2} = 4kT \cdot R_2 \cdot A \cdot B_{en} + v_n^2 \cdot A^2 \c
 
 \section{Spannungsreferenzen}
 
-Die \cdef{Sensitivität $S$} ist die relative Ànderung der des Ausgangs zur Eingangsveränderung.
+Die \cdef{Sensitivität $S$} ist die relative Änderung der  Ausgangs- zur Eingangsveränderung.
 $\fmm S = \frac{\Delta V_{Ref} / V_{ref}}{\Delta V_{DD} / V_{DD}}$
 
 \subsection{Einfachste Referenzquelle}
@@ -1181,12 +1182,12 @@ $$I_D =  I_S \cdot e^{\frac{V_{BE}}{m \cdot V T}} \approx I_S \cdot e^{\frac{q \
 
 Diese Referenz-spannung kann nur im Bereich von $0.6 \text{ bis } 0.7 \text{ } V$ verwendet 
 werden. Um dies zu umgehen, wird häufig eine Zenerdiode (in Gegenrichtung) verwendet. 
-die häufigste Zener-Durchbruchspannung beträgt $5.6 \text{ } V$.
+Die häufigste Zener-Durchbruchspannung beträgt $5.6 \text{ } V$.
 
 \subsection{Bootstrap Referenz (PTAT-Stromquelle)}
 
 Diese Strom-Referenz Methode ist zwar unabhängig von $V_{DD}$, aber temperaturabhängig.
-der \cdef{Temperaturkoeffizient $T_C$} gibt die diese an. 
+Der \cdef{Temperaturkoeffizient $T_C$} gibt diese an. 
 
 \begin{tabular}{ll}
   \begin{tabular}{l}
@@ -1421,7 +1422,7 @@ unabhängige Referenzspannung.
   \end{tabular} &
   \begin{tabular}{p{0.4\columnwidth}}
     Bei LDO-Regler darf der Spannungsabfall zwischen Ein- und Ausgang klein sein. 
-    Da dies ein Regler ist, muss er eine ungerade Anzahl pfadinversionen haben (für Negative-Feedback).
+    Da dies ein Regler ist, muss er eine ungerade Anzahl Pfadinversionen haben (für Negative-Feedback).
   \end{tabular}
 \end{tabular}
   
@@ -1510,7 +1511,7 @@ $$R_{eq} = \frac{T}{C}$$
     \end{circuitikz}
   \end{tabular} &
   \begin{tabular}{p{0.5\columnwidth}}
-    \textbf{Phase 1}: Schalter $S_1$ geschlossen. $C$ wird aufgeladen. \\
+    \textbf{Phase 1}: Schalter $S_1$ geschlossen. \newline $C$ wird aufgeladen. \\
     \textbf{Phase 2}: Schlater $S_2$ geschlossen. $V_{CP}$ springt auf $V_{GND}$. Also muss $V_{CN}$ auch denselben Sprung nach unten machen.
   \end{tabular}
 \end{tabular}
@@ -1637,7 +1638,7 @@ ist ein MOSFET, welcher nur einen On-Wiederstand $R_{DS_{on}}$ im $m\Omega$ bere
     \end{circuitikz}
   \end{tabular} &
   \begin{tabular}{l}
-    $S = \text{on}$: erzeugung neg. Spannung \\
+    $S = \text{on}$: erzeugt neg. Spannung \\
     $\fmm V_L = V_{in} = L \cdot \frac{\Delta I_L}{\Delta t}$ \\
     $S = \text{off}$: negative Spannung über $L$ \\
     $\fmm V_{out} = V_L = -L \cdot \frac{\Delta I_L}{\Delta t}$
@@ -1796,12 +1797,12 @@ $$u(t) = U_2 + (U_1 -U_2) \cdot e^{\frac{-t}{\tau}} \qquad i(t) = I_2 + (I_1 - I
     \textbf{Integrator} \\
     \begin{circuitikz}[scale=0.6, transform shape]
       \draw (3,0.5) node [op amp, yscale=1.02] (opamp) {};
-      \draw (0,1) node[left] {\Large $V_{in}$}  to [resistor, l={\Large $R$, o-}] (2,1) to [short] (opamp.-);
+      \draw (0,1) node[left] {\Large $V_{in}$}  to [resistor, l={\Large $R$}, o-] (2,1) to [short] (opamp.-);
       \draw (opamp.+) to[short, -o] (0,0) node[left] {\Large $V_{A_{GND}}$};
       \draw (opamp.out) to [short, -o] (5.5,0.5) node [below] {\Large $V_{out}$}; 
       \draw (4.5,0.5) to [short, *-] (4.5,2) to [C, l_={\Large $C$}] (1.8,2) to [short, -*] (1.8,1); 
     \end{circuitikz} \\
-    $$\fmm V{out} = \frac{1}{RC} \cdot \int (V_{in} - V_{A_{GND}}) \cdot dt$$
+    $\fmm V{out} = \frac{1}{RC} \cdot \int (V_{in} - V_{A_{GND}}) \cdot dt$
   \end{tabular} \\  
 \end{tabular}
 
