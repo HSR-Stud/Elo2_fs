@@ -457,8 +457,8 @@ Mit dem Schalter $S_2$ wird der Ausgang gültig.
 %$$V_{Out} = \frac{C_1}{C_1 + C_2} \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n} = \frac{C_1}{2^n \cdot C}  \cdot (V_{ref_p} - V_{ref_n}) + V_{ref_n}$$
 
 $$C_{res} = B_3 \cdot 8C + B_2 \cdot 4C + B_1 \cdot 2C + B_0 \cdot C$$
-$$V_{out} = V_{ref_n} + \frac{C_{res}}{C_{fb}} \cdot (V_{ref_p}-V_{ref_n})$$
-$$q = (V_{ref_p}-V_{ref_n}) \cdot \frac{1}{2^n}, \quad n = \text{anz. Schalter } B_n$$
+$$V_{out} = V_{ref_n} - \frac{C_{res}}{C_{fb}} \cdot (V_{ref_p}-V_{ref_n})$$
+$$q = (V_{ref_p}-V_{ref_n}) \cdot \frac{1}{2^n} = (V_{ref_p} - V_{ref_n}) \cdot \frac{C}{C_{fb}}$$
 
 \subsection{DAC mit R-2R-Netzwerk}
 
@@ -1802,7 +1802,7 @@ $$u(t) = U_2 + (U_1 -U_2) \cdot e^{\frac{-t}{\tau}} \qquad i(t) = I_2 + (I_1 - I
       \draw (opamp.out) to [short, -o] (5.5,0.5) node [below] {\Large $V_{out}$}; 
       \draw (4.5,0.5) to [short, *-] (4.5,2) to [C, l_={\Large $C$}] (1.8,2) to [short, -*] (1.8,1); 
     \end{circuitikz} \\
-    $\fmm V{out} = \frac{1}{RC} \cdot \int (V_{in} - V_{A_{GND}}) \cdot dt$
+    $\fmm V{out} = - \frac{1}{RC} \cdot \int (V_{in} - V_{A_{GND}}) \cdot dt$
   \end{tabular} \\  
 \end{tabular}
 
