@@ -495,7 +495,8 @@ $$q = (V_{ref_p}-V_{ref_n}) \cdot \frac{1}{2^n} = (V_{ref_p} - V_{ref_n}) \cdot 
   \end{circuitikz}
 \end{center}
 
-$$I_{DAC} = \frac{V_{ref_p} - V_{ref_n}}{R} \cdot \left( \frac{B_3}{1} + \frac{B_2}{2} + \frac{B_1}{4} + \frac{B_0}{8} \right)$$
+$$I_{DAC} = \frac{V_{ref_p} - V_{ref_n}}{2R} \cdot \left( \frac{B_3}{1} + \frac{B_2}{2} + \frac{B_1}{4} +
+\frac{B_0}{8} \right) \quad R_{res} = R$$
 
 \subsection{Zahlverfahren (PWM)}
 
@@ -850,7 +851,7 @@ $$ G(s) = \frac{\fmm \sum_k P_k \cdot \Delta_k}{\Delta}$$
   & $\fmm \pm \cdots$ \\
 \end{tabular}
 
-\subsection{Ative Filter höherer Ordnung}
+\subsection{Aktive Filter höherer Ordnung}
 
 
 
@@ -887,7 +888,7 @@ $$ G(s) = \frac{\fmm \sum_k P_k \cdot \Delta_k}{\Delta}$$
 \end{center}
 
 \begin{center}
-  \begin{sfd}{0.8}
+  \begin{sfd}{0.6}
     %place a node:
     \node[terminal={left}{$V_{in} $}] (vin)  at (0,0) {};
     \node[terminal={above}{$I_{opn1}$}] (i1) at (2,0) {};
@@ -908,6 +909,8 @@ $$ G(s) = \frac{\fmm \sum_k P_k \cdot \Delta_k}{\Delta}$$
     \draw[amarkback=$\fmm \frac{1}{R_{fp}}$, label revd] (vout) to [out=-100,in=-40] (i1);
   \end{sfd}
 \end{center}
+
+$$\text{Ordnung 2:} \quad G(s) = \frac{K}{\frac{1}{\omega_r^2} s^2 + \frac{2Q}{\omega_r} s + 1}$$
 
 \section{Rauschen}
 \begin{itemize}
@@ -970,7 +973,7 @@ beeinflussen sie direkt die Rauschspannung.
       $\fmm \overline{v_n^2} = 4 k T B \cdot R$ \\
       $\fmm \overline{i_n^2} = 4 k T B \cdot G$ \\
       Serieschaltung: $\fmm \overline{v_{tot}^2} = \overline{v_1^2} + \overline{v_2^2}$ \\
-      $\fmm \Phi_V = \sqrt{4 k T R}$
+      $\fmm e_n = \sqrt{4 k T R}$
     \end{mtabular}
   \end{tabular}
 \end{center}
@@ -1040,13 +1043,13 @@ Das Produkt aus \cdef{Signal-Bandbreite $B_S$} und der \cdef{Verstärkung $A$} i
 Für die \cdef{Effective Noise Bandwidth $B_{en}$} gilt folgende Beziehung: 
 $$B_{en} = \frac{\pi}{2} B_S$$
 
-$$\overline{v_{tot}^2} = \int \left( 
+$$\overline{v_{tot}^2} = \left( 
     4kTR_2 A 
   + 4kTR_3 A^2
   + \overline{i_{nn}^2} R_2^2
   + \overline{I_{np}^2} R_3^2 A^2
   + \overline{v_n^2} A^2
-\right) df$$
+\right) \cdot B$$
 
 $$\text{mit} \quad A = \left(\frac{R_1 + R_2}{R_1}\right)$$
 
@@ -1707,7 +1710,7 @@ Die Wiederstandsänderung ist relativ langsam (mehrere $ms$ verzögert.)
     $R_{Leak}$ & Leckwiederstand \\
   \end{dtabular} &
   \begin{tabular}{c}
-    $\fmm C = \frac{\varepsilon_r \cdot \varepsilon_0 \cdot A}{d}$\\
+    $\fmm C = \frac{Q}{V} = \frac{\varepsilon_r \cdot \varepsilon_0 \cdot A}{d}$\\
     \begin{circuitikz}[scale=0.6, transform shape]
       \draw (0,0) node [above] {\Large $+$} to [short, o-*] (1,0) to [C, l_={\Large $C$}, -*] (3,0) to [R, l={\Large $R_{e}$}] (5,0) to [L, l={\Large $L_{e}$}, -o] (7,0) node [above] {\Large $-$};
       \draw (1,0) to [short] (1,1) to [R, l={\Large $R_{Leak}$}] (3,1) to [short] (3,0); 
@@ -1820,7 +1823,7 @@ $$u(t) = U_2 + (U_1 -U_2) \cdot e^{\frac{-t}{\tau}} \qquad i(t) = I_2 + (I_1 - I
   \end{tabular} & 
   \begin{tabular}{c}
     $\fmm \omega_{c_{3db}} = \frac{1}{R_F \cdot C_F} \qquad f_{c_{3db}} = \frac{1}{2\pi \cdot R_F \cdot C_F}$ \\
-    $\fmm H(s) = \frac{V_{out}}{V_{in}} = \frac{R_F}{s R_1 R_F C_F + R_1}$ 
+    $\fmm H(s) = \frac{V_{out}}{V_{in}} = - \frac{R_F}{s R_1 R_F C_F + R_1}$ 
     
   \end{tabular}
 \end{tabular}
